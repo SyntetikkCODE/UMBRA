@@ -1,0 +1,7 @@
+Role icons in UMBRA
+
+Infanterie, Medic, Builders, Driver and Pilote reproduce the shapes shown in
+the Wardogs class screenshot supplied by the team. They are vector redraws,
+not extracted original game files. Wardogs is a BULKHEAD game.
+Launcher is an UMBRA rocket-launcher silhouette.
+Recon, Sniper and Libre use Lucide icons under the included Lucide license.

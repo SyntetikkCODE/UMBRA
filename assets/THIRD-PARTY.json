@@ -1,0 +1,41 @@
+{
+  "inter": {
+    "source": "https://rsms.me/inter/font-files/InterVariable.woff2",
+    "license": "https://raw.githubusercontent.com/rsms/inter/353b61b9f4430d5f420d56605a6e7993e0941470/LICENSE.txt",
+    "sha256": "693b77d4f32ee9b8bfc995589b5fad5e99adf2832738661f5402f9978429a8e3"
+  },
+  "lucide": {
+    "source": "https://github.com/lucide-icons/lucide",
+    "commit": "440a1e1dfb1e712505308da46bead3c28b1f1398",
+    "license": "https://raw.githubusercontent.com/lucide-icons/lucide/440a1e1dfb1e712505308da46bead3c28b1f1398/LICENSE",
+    "icons": {
+      "grid": "layout-grid",
+      "squad": "shield",
+      "radio": "radio",
+      "users": "users-round",
+      "settings": "settings-2",
+      "plus": "plus",
+      "close": "x",
+      "min": "minus",
+      "max": "square",
+      "arrow": "arrow-right",
+      "chevron": "chevron-right",
+      "search": "search",
+      "crown": "crown",
+      "mic": "mic",
+      "headset": "headset",
+      "lock": "lock-keyhole",
+      "target": "crosshair",
+      "box": "package",
+      "shield": "shield-check",
+      "info": "info",
+      "download": "download",
+      "upload": "upload",
+      "edit": "pencil",
+      "logout": "log-out",
+      "check": "check",
+      "trash": "trash",
+      "pin": "pin"
+    }
+  }
+}

@@ -1,0 +1,62 @@
+name: Sign UMBRA with SignPath
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: signpath-release
+  cancel-in-progress: false
+jobs:
+  sign:
+    if: github.repository == 'SyntetikkCODE/UMBRA' && github.ref == 'refs/heads/main' && vars.SIGNPATH_READY == 'true'
+    runs-on: windows-2025
+    environment: signpath
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: SignPath/github-action-submit-signing-request
+          ref: f6d04783b4569d051e0c80105fe66e82819d0092 # v3
+          path: .signpath/action
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm run check:public
+      - run: npm test
+      - run: npm run build:vendors
+      - name: Sign app, NSIS uninstaller and installer during packaging
+        run: npm run dist:signpath
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+          SIGNPATH_API_TOKEN: ${{ secrets.SIGNPATH_API_TOKEN }}
+          SIGNPATH_ORGANIZATION_ID: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          SIGNPATH_PUBLISHER: ${{ vars.SIGNPATH_PUBLISHER }}
+          SIGNPATH_ACTION_PATH: ${{ github.workspace }}/.signpath/action
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Verify final installer and executable
+        shell: pwsh
+        env:
+          SIGNPATH_PUBLISHER: ${{ vars.SIGNPATH_PUBLISHER }}
+        run: |
+          $version = (Get-Content package.json | ConvertFrom-Json).version
+          ./build/verify-authenticode.ps1 -FilePath ./dist/win-unpacked/UMBRA.exe -ExpectedPublisher $env:SIGNPATH_PUBLISHER -ExpectedVersion "$version.0"
+          ./build/verify-authenticode.ps1 -FilePath "./dist/UMBRA-Setup-$version-win64.exe" -ExpectedPublisher $env:SIGNPATH_PUBLISHER -ExpectedVersion $version
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: umbra-signed-awaiting-publication
+          path: |
+            dist/UMBRA-Setup-*-win64.exe
+            dist/UMBRA-Setup-*-win64.exe.blockmap
+            dist/latest.yml
+          retention-days: 14
+          if-no-files-found: error
+      # Production publication and the existing Ed25519 update key remain local.
+      # These artifacts must be reviewed and update metadata signed before upload.
+

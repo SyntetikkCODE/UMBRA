@@ -1,0 +1,69 @@
+{
+  "appId": "fr.lotus-order.umbra",
+  "productName": "UMBRA",
+  "directories": {
+    "output": "dist",
+    "buildResources": "assets"
+  },
+  "electronVersion": "44.7.0",
+  "npmRebuild": false,
+  "asar": true,
+  "asarUnpack": [
+    "**/*.node"
+  ],
+  "files": [
+    "main.cjs",
+    "preload.cjs",
+    "package.json",
+    "index.html",
+    "src/**",
+    "assets/**",
+    "licenses/**",
+    "LIRE-MOI.md",
+    "!assets/wardogs-reference.png"
+  ],
+  "extraFiles": [
+    {
+      "from": "licenses-dist",
+      "to": "LICENCES"
+    },
+    {
+      "from": "LIRE-MOI.md",
+      "to": "LIRE-MOI.md"
+    }
+  ],
+  "publish": [
+    {
+      "provider": "generic",
+      "url": "https://umbra.lotus-order.fr/umbra-updates/"
+    }
+  ],
+  "win": {
+    "target": [
+      {
+        "target": "nsis",
+        "arch": [
+          "x64"
+        ]
+      }
+    ],
+    "icon": "assets/umbra.ico",
+    "artifactName": "UMBRA-Setup-${version}-win64.exe"
+  },
+  "nsis": {
+    "oneClick": false,
+    "perMachine": false,
+    "allowElevation": false,
+    "allowToChangeInstallationDirectory": true,
+    "deleteAppDataOnUninstall": false,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true,
+    "shortcutName": "UMBRA",
+    "include": "build/installer.nsh",
+    "installerLanguages": [
+      "fr_FR"
+    ],
+    "runAfterFinish": true,
+    "packElevateHelper": false
+  }
+}

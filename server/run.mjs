@@ -1,0 +1,10 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import {startApi} from './api.mjs';
+const configFile=process.env.UMBRA_SERVER_CONFIG;
+if(!configFile)throw new Error('Définir UMBRA_SERVER_CONFIG au chemin du fichier de configuration privé.');
+const config=JSON.parse(await fs.readFile(configFile,'utf8'));
+config.dataDir=path.resolve(config.dataDir);
+const api=await startApi(config);
+console.log('UMBRA API prête sur '+(config.bind||'127.0.0.1')+':'+api.port);
+for(const signal of ['SIGINT','SIGTERM'])process.on(signal,async()=>{await api.close();process.exit(0);});
