@@ -1,4 +1,4 @@
-# UMBRA 0.15.2 — Wardogs Companion
+# UMBRA 0.15.3 — Wardogs Companion
 
 Téléchargement officiel : https://umbra.lotus-order.fr/
 
@@ -15,3 +15,6 @@ Les comptes et messages partagés restent sur le serveur choisi. Aucun compte de
 La candidature SignPath a été reçue, mais n’est pas encore approuvée. Cette version ne revendique aucune signature Authenticode SignPath. Le canal de mises à jour conserve sa signature Ed25519 existante.
 
 Notices tierces et sources LGPL : LICENCES. Politique de confidentialité dans les sources publiques du projet.
+
+- Lecteur vidéo : icônes Plein écran et Lecteur réduit flottant. En plein écran, les commandes micro, casque, caméra, partage et départ du vocal restent accessibles ; Échap quitte le plein écran.
+- Le partage cible désormais 720p à 30 images/s, avec priorité à la fluidité lorsque le débit est limité. La cadence effective dépend du PC, de la source partagée et du réseau.

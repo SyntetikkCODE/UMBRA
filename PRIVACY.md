@@ -23,3 +23,5 @@ Pour une suppression de compte ou de données, contacter l’administrateur du s
 
 Cette notice décrit le comportement du code actuel ; elle ne fixe pas à la place de chaque hébergeur une durée de conservation ou une procédure légale.
 
+
+Le lecteur réduit conserve uniquement la lecture du flux choisi lors des changements de page. Il se ferme à l’arrêt du flux, au changement de vocal ou à la déconnexion. Il ne démarre aucune nouvelle capture.

@@ -37,3 +37,5 @@ test('Diagnostic distinguishes offline, poor network, unavailable devices, local
 });
 
 test('Desktop capture media permission needs a pending explicit choice',()=>{const {mediaPermissionRequest:allow}=require('../src/media-permissions.cjs');assert.equal(allow(true,'media',['video']),true);assert.equal(allow(true,'media',[]),false);assert.equal(allow(true,'media',[],true),true);assert.equal(allow(false,'media',[],true),false);assert.equal(allow(true,'display-capture',[],true),true);assert.equal(allow(true,'display-capture',[]),false);});
+
+test('Fullscreen is granted only to the trusted app, unrelated privileges stay denied',()=>{const {mediaPermissionRequest:request,mediaPermissionCheck:check}=require('../src/media-permissions.cjs');assert.equal(request(true,'fullscreen'),true);assert.equal(request(false,'fullscreen'),false);assert.equal(check(true,'fullscreen','umbra://app/'),true);assert.equal(check(true,'fullscreen','https://example.com'),false);assert.equal(check(false,'fullscreen','umbra://app/'),false);assert.equal(request(true,'geolocation'),false);});

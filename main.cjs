@@ -70,7 +70,7 @@ app.whenReady().then(async () => {
   });
   session.defaultSession.setPermissionRequestHandler((wc, permission, callback, details) => {
     const internal=wc === win?.webContents && wc.getURL().startsWith('umbra://app/');
-    callback(mediaPermissionRequest(internal,permission,details.mediaTypes,captureSelection.pending()));
+    callback(mediaPermissionRequest(internal&&(permission!=='fullscreen'||details.isMainFrame!==false),permission,details.mediaTypes,captureSelection.pending()));
   });
   session.defaultSession.setPermissionCheckHandler((wc, permission, origin, details) => mediaPermissionCheck(wc===win?.webContents,permission,origin,details.mediaType));
   session.defaultSession.setDisplayMediaRequestHandler(async(request,callback)=>{
