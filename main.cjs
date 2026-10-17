@@ -138,7 +138,7 @@ app.whenReady().then(async () => {
     const candidate=JSON.parse(await fs.readFile(result.filePaths[0],'utf8'));if(remote){const {validateState}=await import('./src/model.mjs');validateState(candidate);return candidate;}return accounts.validateImport(candidate);
   });
   handle('network:info',()=>({shared:!!remote,url:remote?.base||'',keys:ptt.keys,version:app.getVersion()}));
-  handle('capture:sources',async()=>{if(remote)await remote.request('state');else accounts.session();win.show();win.focus();const sources=await desktopCapturer.getSources({types:['screen','window'],thumbnailSize:{width:300,height:180},fetchWindowIcons:false});captureSelection.list(sources);return sources.map(s=>({id:s.id,name:s.name,thumbnail:s.thumbnail.toDataURL()}));});
+  handle('capture:sources',async()=>{if(remote)await remote.request('state');else accounts.session();win.show();win.focus();const sources=await desktopCapturer.getSources({types:['screen','window'],thumbnailSize:{width:300,height:180},fetchWindowIcons:false});captureSelection.list(sources);return sources.map(s=>({id:s.id,name:s.name,type:s.id.startsWith('screen:')?'screen':'application',thumbnail:s.thumbnail.toDataURL()}));});
   handle('capture:select',(id,audio)=>{captureSelection.select(id,audio);return true;});
   handle('capture:cancel',()=>{captureSelection.clear();return true;});
   handle('network:configure',async url=>{if(url)url=serverUrl(url);if(!remote&&url)audioPreferences=accounts.db?.state?.settings||audioPreferences||defaultAudio;ptt.stop();await remembered.clear();setRemote(url);await saveConnection();return {shared:!!remote,url:remote?.base||''};});

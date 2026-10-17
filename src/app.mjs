@@ -31,7 +31,7 @@ let shared=false,serverAddress='',networkOnline=false,voiceUsers=[],onlineIds=[]
 export const voice=new VoiceClient(window.desktop,()=>updateVoiceUI());
 const templates=new SquadTemplates();
 let cameraDevices=[],cameraPreview=null,lastMicLevelDb=null,cameraPreviewGeneration=0,cameraPreviewStarting=false;
-let appVersion='0.15.1', updateState={phase:'portable',startup:false};
+let appVersion='0.15.2', updateState={phase:'portable',startup:false};
 let settingsTab='voice';
 let channelExperiment=localStorage.getItem('umbra-channel-experiment')!=='off',roomMode='voice',gatePreview=null,railWasVisible=false;
 const channelsView=new ChannelsView(window.desktop,()=>refreshChannelsUI(),error=>toast(friendlyError(error),true),message=>chatPing(message),()=>page==='operations'&&roomMode==='text');
@@ -439,13 +439,23 @@ async function toggleCameraPreview(){
 }
 async function screenPicker(){
  if(!voice.enabled||voice.primaryRoom?.state!=='connected')throw new Error('Rejoins un vocal avant de partager ton écran.');
- const room=voice.primaryRoom,sources=await window.desktop.captureSources();if(!sources.length)throw new Error('Aucune fenêtre ou écran disponible.');let selectedSource=null;
- showDialog('Partager une fenêtre ou un écran',`<p class="settings-note">Visible par les joueurs de « ${escape(voice.label)} ». Choisis uniquement le contenu que tu souhaites partager.</p><div class="capture-grid">${sources.map(s=>`<button type="button" class="capture-source" data-capture-id="${escape(s.id)}" aria-pressed="false"><img src="${escape(s.thumbnail)}" alt="Aperçu"><span>${escape(s.name)}</span></button>`).join('')}</div><label class="check"><input type="checkbox" name="shareAudio">Partager aussi le son de Windows (tous les sons du PC)</label>`,'Partager',async data=>{
-  if(!selectedSource)throw new Error('Choisis une fenêtre ou un écran.');if(room!==voice.primaryRoom)throw new Error('Ton vocal a changé. Rouvre le sélecteur.');await voice.startScreen(selectedSource,data.has('shareAudio'));voice.screenLabel=sources.find(s=>s.id===selectedSource)?.name||'Partage d’écran';voice.watchMedia(state.currentUserId,'screen_share');page='media';render();toast('Partage d’écran actif dans '+voice.label+'.');
+ const room=voice.primaryRoom,sources=await window.desktop.captureSources();if(!sources.length)throw new Error('Aucune fenêtre ou écran disponible.');let selectedSource=null,sourceType='application';
+ showDialog('Partager ton écran',`<p class="settings-note">Visible par les joueurs de « ${escape(voice.label)} ». Choisis une application ou un écran entier.</p><div class="capture-tabs" role="tablist" aria-label="Type de partage"><button type="button" id="capture-tab-application" role="tab" data-capture-tab="application" aria-controls="capture-sources" aria-selected="true">${icon('grid')}Applications</button><button type="button" id="capture-tab-screen" role="tab" data-capture-tab="screen" aria-controls="capture-sources" aria-selected="false" tabindex="-1">${icon('screen')}Écran entier</button></div><div id="capture-sources" class="capture-grid" role="tabpanel" aria-labelledby="capture-tab-application"></div><label class="check"><input type="checkbox" name="shareAudio">Partager aussi le son de Windows (tous les sons du PC)</label>`,'Partager',async data=>{
+  const chosen=sources.find(s=>s.id===selectedSource&&s.type===sourceType);if(!chosen)throw new Error('Choisis une application ou un écran.');if(room!==voice.primaryRoom)throw new Error('Ton vocal a changé. Rouvre le sélecteur.');await voice.startScreen(chosen.id,data.has('shareAudio'));voice.screenLabel=chosen.name||'Partage d’écran';voice.watchMedia(state.currentUserId,'screen_share');page='media';render();toast('Partage d’écran actif dans '+voice.label+'.');
  });
- for(const b of modal.querySelectorAll('[data-capture-id]'))b.onclick=()=>{selectedSource=b.dataset.captureId;for(const other of b.parentElement.children){other.classList.toggle('selected',other===b);other.setAttribute('aria-pressed',String(other===b));}};
- modal.addEventListener('close',()=>window.desktop.cancelCapture().catch(()=>{}),{once:true});
+ const grid=modal.querySelector('#capture-sources'),submit=modal.querySelector('[type=submit]'),tabs=[...modal.querySelectorAll('[data-capture-tab]')];
+ function showSources(type){
+  sourceType=type;selectedSource=null;submit.disabled=true;modal.querySelector('#dialog-error').textContent='';
+  for(const tab of tabs){const active=tab.dataset.captureTab===type;tab.setAttribute('aria-selected',String(active));tab.tabIndex=active?0:-1;}
+  grid.setAttribute('aria-labelledby','capture-tab-'+type);const visible=sources.filter(s=>s.type===type);
+  grid.innerHTML=visible.length?visible.map(s=>`<button type="button" class="capture-source" data-capture-id="${escape(s.id)}" data-capture-type="${escape(type)}" aria-pressed="false"><img src="${escape(s.thumbnail)}" alt=""><span>${escape(s.name)}</span></button>`).join(''):`<p class="capture-empty">${type==='screen'?'Aucun écran disponible.':'Aucune application disponible. Ouvre une fenêtre, puis rouvre le sélecteur.'}</p>`;
+  grid.scrollTop=0;
+ }
+ grid.addEventListener('click',event=>{const source=event.target.closest('[data-capture-id]');if(!source)return;selectedSource=source.dataset.captureId;for(const other of grid.querySelectorAll('[data-capture-id]')){other.classList.toggle('selected',other===source);other.setAttribute('aria-pressed',String(other===source));}submit.disabled=false;});
+ for(const tab of tabs){tab.onclick=()=>showSources(tab.dataset.captureTab);tab.onkeydown=event=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;event.preventDefault();const next=event.key==='Home'?tabs[0]:event.key==='End'?tabs[1]:tabs[1-tabs.indexOf(tab)];showSources(next.dataset.captureTab);next.focus();};}
+ showSources('application');modal.addEventListener('close',()=>window.desktop.cancelCapture().catch(()=>{}),{once:true});
 }
+
 voice.cameraDevice=localStorage.getItem('umbra-camera-device')||'';
 voice.onShortcut=async action=>{try{if(action==='toggleMute')voice.setMute(!voice.muted);else if(action==='toggleDeafen')voice.setDeafen(!voice.deafened);else if(action==='disconnect')await voice.disconnect();else if(action==='toggleCamera'){const enabled=!voice.cameraEnabled;await voice.setCamera(enabled);if(enabled){voice.watchMedia(state.currentUserId,'camera');page='media';render();}}else if(action==='toggleScreen'){if(voice.screenEnabled)await voice.stopScreen();else await screenPicker();}else if(action==='openVoiceSettings'){settingsTab='voice';nav('settings');}}catch(e){toast(friendlyError(e),true);}};
 setInterval(()=>{if(page==='settings'&&settingsTab==='voice')updateDiagnostics();},700);
