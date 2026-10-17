@@ -9,4 +9,4 @@ Vérifications le 18 octobre 2026 :
 - Contrôle visuel du sélecteur avec une fenêtre de test isolée, sans publier de capture d’écran personnelle.
 - Installeur comparé aux 99 fichiers source embarqués ; manifeste du canal de mise à jour signé avec la clé existante.
 
-Mise à jour du client uniquement ; API et moteur vocal restent en version serveur 0.15.1. Les essais synthétiques ne remplacent pas une validation de chaque webcam physique ni une session de 40 joueurs. La signature Authenticode SignPath n’est pas encore acquise.
+Mise à jour du client uniquement ; L’API reste en version 0.15.1 et le moteur vocal en place est conservé. Les essais synthétiques ne remplacent pas une validation de chaque webcam physique ni une session de 40 joueurs. La signature Authenticode SignPath n’est pas encore acquise.
