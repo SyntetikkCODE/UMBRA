@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, protocol, net, session, dialog, nativeImage, shell, safeStorage, clipboard } = require('electron');
+const { app, BrowserWindow, ipcMain, protocol, net, session, dialog, nativeImage, shell, safeStorage, clipboard, desktopCapturer } = require('electron');
 const path = require('node:path');
 const fs = require('node:fs/promises');
 const { pathToFileURL } = require('node:url');
@@ -15,6 +15,8 @@ let audioPreferences=null;
 let ptt;
 let updates;
 let defaultAudio;
+const captureSelection=require('./src/screen-capture.cjs').createCaptureSelection();
+const {mediaPermissionCheck,mediaPermissionRequest}=require('./src/media-permissions.cjs');
 const withPreferences=state=>({...state,settings:{...defaultAudio,...(remote?audioPreferences:state.settings)}});
 
 app.on('second-instance', () => { if (win) { if (win.isMinimized()) win.restore(); win.focus(); } });
@@ -68,9 +70,14 @@ app.whenReady().then(async () => {
   });
   session.defaultSession.setPermissionRequestHandler((wc, permission, callback, details) => {
     const internal=wc === win?.webContents && wc.getURL().startsWith('umbra://app/');
-    callback(internal && (permission==='speaker-selection' || permission==='media' && details.mediaTypes?.length>0 && details.mediaTypes.every(t=>t==='audio')));
+    callback(mediaPermissionRequest(internal,permission,details.mediaTypes,captureSelection.pending()));
   });
-  session.defaultSession.setPermissionCheckHandler((wc, permission, origin, details) => wc === win?.webContents && origin.startsWith('umbra://app') && (permission==='speaker-selection'||permission==='media'&&details.mediaType==='audio'));
+  session.defaultSession.setPermissionCheckHandler((wc, permission, origin, details) => mediaPermissionCheck(wc===win?.webContents,permission,origin,details.mediaType));
+  session.defaultSession.setDisplayMediaRequestHandler(async(request,callback)=>{
+    if(request.frame!==win?.webContents.mainFrame||!request.frame.url.startsWith('umbra://app/'))return callback(null);
+    const chosen=captureSelection.consume();if(!chosen)return callback(null);
+    try{const sources=await desktopCapturer.getSources({types:['screen','window'],thumbnailSize:{width:0,height:0}}),source=sources.find(s=>s.id===chosen.id);callback(source?{video:source,...(chosen.audio&&request.audioRequested?{audio:'loopback'}:{})}:null);}catch{callback(null);}
+  });
   const handle = (channel, fn) => ipcMain.handle(channel, async (e, ...args) => {
     guard(e); if(startupError&&!remote&&!channel.startsWith('network:')&&!channel.startsWith('updates:')) throw new Error(startupError); return fn(...args);
   });
@@ -131,6 +138,9 @@ app.whenReady().then(async () => {
     const candidate=JSON.parse(await fs.readFile(result.filePaths[0],'utf8'));if(remote){const {validateState}=await import('./src/model.mjs');validateState(candidate);return candidate;}return accounts.validateImport(candidate);
   });
   handle('network:info',()=>({shared:!!remote,url:remote?.base||'',keys:ptt.keys,version:app.getVersion()}));
+  handle('capture:sources',async()=>{if(remote)await remote.request('state');else accounts.session();win.show();win.focus();const sources=await desktopCapturer.getSources({types:['screen','window'],thumbnailSize:{width:300,height:180},fetchWindowIcons:false});captureSelection.list(sources);return sources.map(s=>({id:s.id,name:s.name,thumbnail:s.thumbnail.toDataURL()}));});
+  handle('capture:select',(id,audio)=>{captureSelection.select(id,audio);return true;});
+  handle('capture:cancel',()=>{captureSelection.clear();return true;});
   handle('network:configure',async url=>{if(url)url=serverUrl(url);if(!remote&&url)audioPreferences=accounts.db?.state?.settings||audioPreferences||defaultAudio;ptt.stop();await remembered.clear();setRemote(url);await saveConnection();return {shared:!!remote,url:remote?.base||''};});
   handle('network:invite',()=>{if(!remote)throw new Error('Connexion au serveur requise.');return remote.request('admin/invite');});
   handle('voice:plan',()=>{if(!remote)throw new Error('Connecte-toi à un serveur partagé pour utiliser le vocal.');return remote.request('voice/plan');});

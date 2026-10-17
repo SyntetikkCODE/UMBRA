@@ -1,6 +1,6 @@
 # SignPath Foundation application draft
 
-Status: draft for maintainer review, not submitted. Contact details and the final public repository URL must be confirmed before submission. Artwork review remains open as described below.
+Status: submitted on 2026-10-16 at approximately 21:50 CEST, with a visible “Form submitted” confirmation. Acceptance is pending. The text below records the onboarding candidate; artwork review remains open as described below.
 
 **Project:** UMBRA — Wardogs Companion
 
@@ -26,7 +26,7 @@ Status: draft for maintainer review, not submitted. Contact details and the fina
 
 **Why assistance is requested:** The project is free for a small community and the individual maintainer cannot fund a commercial signing service. A trusted signature would identify the release publisher and reduce concern about installing unsigned software. No guarantee of immediate SmartScreen reputation is claimed.
 
-**Open items:** Public repository, maintainer contact email, artwork rights, SignPath account acceptance, project/policy IDs, confirmed publisher identity, protected signing environment, first real GitHub-origin signing round-trip.
+**Open items:** Artwork rights, SignPath account acceptance, project/policy IDs, confirmed publisher identity, protected signing environment, first real GitHub-origin signing round-trip.
 
 Application: https://signpath.org/apply.html
 

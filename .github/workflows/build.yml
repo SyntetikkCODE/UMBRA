@@ -23,6 +23,7 @@ jobs:
       - run: npm test
       - run: npm run build:vendors
       - run: npm run test:ui
+      - run: npm run test:companion
       - run: npm run dist:unsigned
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'

@@ -1,14 +1,16 @@
-# UMBRA — version de préparation 0.14.3
+# UMBRA 0.15.0 — Wardogs Companion
 
-Cette copie prépare une publication des sources et une candidature à la signature gratuite SignPath Foundation. Elle ne remplace pas la version 0.14.2 disponible sur le site.
+Téléchargement officiel : https://umbra.lotus-order.fr/
 
-Pour utiliser UMBRA, télécharger la version distribuée depuis https://umbra.lotus-order.fr/. Ne pas présenter les builds de revue non signés comme une version certifiée ou déjà acceptée par SignPath.
+- Réglages → Voix & vidéo : diagnostic en direct, périphériques, tests micro et caméra.
+- Panneau vocal en bas à gauche : micro, son, caméra, partage et réglages.
+- Un partage demande toujours de choisir une fenêtre ou un écran. Le son de Windows est optionnel. Les médias restent dans le vocal actuel et s’arrêtent à sa sortie ou lors d’un déplacement.
+- Clique sur En direct ou sur l’icône caméra près du pseudo pour regarder le flux. Chaque membre du vocal peut partager ; les autres flux ne sont pas chargés automatiquement.
+- Escouades → Modèles : enregistrer une composition sans joueurs et la réutiliser. Les modèles restent sur ce PC, par compte et serveur.
+- Réglages → Raccourcis : ajouter une action, appuyer sur une touche clavier ou souris, puis Entrée. Les touches doivent être différentes ; les raccourcis sont actifs pendant la connexion au vocal.
 
-Les données personnelles et réglages Windows sont stockés dans le profil utilisateur UMBRA. Les comptes partagés, squads et messages sont hébergés sur le serveur choisi. Aucun compte de démonstration n’est ajouté et aucune voix n’est enregistrée par l’application.
+Les comptes et messages partagés restent sur le serveur choisi. Aucun compte de démonstration n’est ajouté. Aucun enregistrement audio/vidéo n’est effectué par l’application.
 
-Le vocal doit être rejoint volontairement. Les réglages permettent de choisir le micro, la sortie, les volumes, la gate et le push-to-talk. Les raccourcis clavier et les cinq boutons standards de souris sont configurables ; les boutons 4/5 sont conseillés pour éviter de parler à chaque clic de jeu.
+La candidature SignPath a été reçue, mais n’est pas encore approuvée. Cette version ne revendique aucune signature Authenticode SignPath. Le canal de mises à jour conserve sa signature Ed25519 existante.
 
-Les autres joueurs voient la photo de profil dans un cercle gris dont le contour devient jaune pendant la parole. Les badges indiquent micro ou casque coupés.
-
-Les licences sont fournies dans LICENCES. Les conditions de signature et la confidentialité sont documentées dans les sources du projet.
-
+Notices tierces et sources LGPL : LICENCES. Politique de confidentialité dans les sources publiques du projet.

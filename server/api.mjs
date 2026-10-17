@@ -58,7 +58,7 @@ export async function startApi(config) {
   const reply=(status,data)=>{res.writeHead(status,{'Content-Type':'application/json; charset=utf-8'});res.end(JSON.stringify(data));};
   try{
    const route=new URL(req.url,'http://localhost').pathname;
-   if(req.method==='GET'&&route==='/health')return reply(200,{name:'UMBRA',version:'0.14.0',needsRegistration:accounts.status().needsRegistration});
+   if(req.method==='GET'&&route==='/health')return reply(200,{name:'UMBRA',version:'0.15.0',needsRegistration:accounts.status().needsRegistration});
    if(req.method==='POST'&&route==='/chat/upload'){
     const id=identify(req),params=new URL(req.url,'http://localhost').searchParams,channelId=params.get('channelId');
     const c=chat.channel(accounts.session(id).state,id,channelId);if(!c.canWrite)throw new Error('Salon en lecture seule.');
@@ -114,7 +114,7 @@ export async function startApi(config) {
     const channels=allowed(id),p=accounts.db.state.players.find(p=>p.id===id);
     for(const c of channels){
      const token=new AccessToken(config.apiKey,config.apiSecret,{identity:id,name:p.name,ttl:120});
-     token.addGrant({room:c.room,roomJoin:true,canSubscribe:true,canPublish:c.canPublish,canPublishData:false,canPublishSources:[TrackSource.MICROPHONE],canUpdateOwnMetadata:false});
+     token.addGrant({room:c.room,roomJoin:true,canSubscribe:true,canPublish:c.canPublish,canPublishData:false,canPublishSources:c.kind==='primary'?[TrackSource.MICROPHONE,TrackSource.CAMERA,TrackSource.SCREEN_SHARE,TrackSource.SCREEN_SHARE_AUDIO]:[TrackSource.MICROPHONE],canUpdateOwnMetadata:false});
      c.token=await token.toJwt();if(!issued.has(id))issued.set(id,new Set());issued.get(id).add(c.room);
     }
     return reply(200,{url:config.publicVoiceUrl,channels,visitSquadId:visits.get(id)||null});

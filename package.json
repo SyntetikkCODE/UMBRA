@@ -1,7 +1,7 @@
 {
   "name": "umbra-war-room",
   "productName": "UMBRA",
-  "version": "0.14.3",
+  "version": "0.15.0",
   "description": "Communications et escouades pour les équipes Wardogs",
   "author": "UMBRA contributors",
   "private": true,
@@ -15,7 +15,7 @@
     "test:voice": "node tests/voice.mjs",
     "build:voice": "esbuild node_modules/livekit-client/dist/livekit-client.esm.mjs --bundle --format=esm --platform=browser --minify --outfile=assets/livekit.mjs",
     "test:devices": "node tests/devices.mjs",
-    "dist": "electron-builder --config electron-builder.json --win nsis --x64 --publish never && node scripts/sign-release.cjs",
+    "dist": "npm run dist:unsigned && node scripts/sign-release.cjs dist",
     "sign:release": "node scripts/sign-release.cjs",
     "dist:signed": "electron-builder --config electron-builder-signed.json --win nsis --x64 --publish never && node scripts/sign-release.cjs",
     "test:vad": "node tests/vad.mjs",
@@ -27,7 +27,9 @@
     "build:licenses": "node scripts/build-licenses.cjs",
     "dist:unsigned": "npm run build:licenses && electron-builder --config electron-builder.json --win nsis --x64 --publish never",
     "dist:signpath": "npm run build:licenses && electron-builder --config electron-builder.signpath.cjs --win nsis --x64 --publish never",
-    "check:public": "node scripts/check-public.mjs"
+    "check:public": "node scripts/check-public.mjs",
+    "test:companion": "node tests/companion-ui.mjs",
+    "test:media": "node tests/media-ui.mjs"
   },
   "devDependencies": {
     "@actions/artifact": "4.0.0",

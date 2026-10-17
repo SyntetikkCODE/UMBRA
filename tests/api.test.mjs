@@ -13,3 +13,9 @@ test('API partagée : identité explicite et aucun périphérique audio d’un a
   const denied=await fetch('http://127.0.0.1:'+api.port+'/state');assert.equal(denied.status,401);
  }finally{await api.close();}
 });
+test('Media grants allow camera and screen only in the authorized primary room, never leader or broadcast networks',async()=>{
+ const dir=await fs.mkdtemp(path.resolve(import.meta.dirname,'../artifacts/media-grants-'));
+ const api=await startApi({dataDir:dir,port:0,apiKey:'test',apiSecret:'0'.repeat(64),livekitUrl:'http://127.0.0.1:65530',publicVoiceUrl:'ws://127.0.0.1:65530',joinCode:'test-code'});
+ try{const result=await api.accounts.register({name:'MediaGrantTest',password:'test-password'}),id=result.state.currentUserId;await api.accounts.action({type:'create',name:'Test',kind:'Infanterie',mood:'Tactique',role:'Medic',roles:[]},id);await api.accounts.action({type:'rights',playerId:id,admin:true,commander:true},id);const session=await api.issue(id),response=await fetch('http://127.0.0.1:'+api.port+'/voice/plan',{headers:{Authorization:'Bearer '+session.token}}),plan=await response.json();assert.equal(response.status,200);assert.equal(plan.channels.length,3);for(const c of plan.channels){const jwt=JSON.parse(Buffer.from(c.token.split('.')[1],'base64url'));assert.equal(jwt.video.room,c.room);assert.deepEqual(jwt.video.canPublishSources,c.kind==='primary'?['microphone','camera','screen_share','screen_share_audio']:['microphone']);}}
+ finally{await api.close();}
+});

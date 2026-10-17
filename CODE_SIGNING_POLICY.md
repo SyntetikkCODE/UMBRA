@@ -2,7 +2,7 @@
 
 ## Current status
 
-The project is preparing an application to SignPath Foundation. No application approval, signing certificate or production signing grant is claimed at this stage. Unsigned review builds must be clearly labelled as such.
+The application to SignPath Foundation was submitted on 2026-10-16 (submission confirmation received). No application approval, signing certificate or production signing grant is claimed at this stage. Unsigned review builds must be clearly labelled as such.
 
 After acceptance, add the required statement with the Foundation’s authorization: “Free code signing provided by SignPath.io, certificate by SignPath Foundation”. Do not display this as an existing endorsement before acceptance.
 
