@@ -1,7 +1,8 @@
-# UMBRA 0.15.0 — Wardogs Companion
+# UMBRA 0.15.1 — Wardogs Companion
 
 Téléchargement officiel : https://umbra.lotus-order.fr/
 
+- Liste des vocaux : clique sur ta squad pour te connecter directement. Les admins peuvent visiter toutes les squads ; l’accueil est ouvert à toute l’équipe. Sans accès à une squad, le clic ouvre sa fiche.
 - Réglages → Voix & vidéo : diagnostic en direct, périphériques, tests micro et caméra.
 - Panneau vocal en bas à gauche : micro, son, caméra, partage et réglages.
 - Un partage demande toujours de choisir une fenêtre ou un écran. Le son de Windows est optionnel. Les médias restent dans le vocal actuel et s’arrêtent à sa sortie ou lors d’un déplacement.

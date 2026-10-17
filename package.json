@@ -1,8 +1,8 @@
 {
   "name": "umbra-war-room",
   "productName": "UMBRA",
-  "version": "0.15.0",
-  "description": "Communications et escouades pour les équipes Wardogs",
+  "version": "0.15.1",
+  "description": "Communications et escouades pour les \u00c3\u00a9quipes Wardogs",
   "author": "UMBRA contributors",
   "private": true,
   "type": "module",

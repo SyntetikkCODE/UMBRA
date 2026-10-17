@@ -19,7 +19,7 @@ export async function startApi(config) {
  const sessions=new Sessions(config.dataDir);await sessions.open(id=>accounts.db.accounts.some(a=>a.id===id));
  const visits=new Map(),sockets=new Map(),issued=new Map(),activity=new Map(),voiceStates=new Map();
  let stopping=false,revision=0,liveUsers=[],presenceBusy=false;
- const allowed=id=>{const state=accounts.session(id).state,visit=visits.get(id);return voiceChannels(state,id,{visitSquadId:state.players.find(p=>p.id===id)?.admin&&state.squads.some(q=>q.id===visit)?visit:null,namespace,epoch});};
+ const allowed=id=>{const state=accounts.session(id).state,visit=visits.get(id);return voiceChannels(state,id,{visitLobby:visit==='lobby',visitSquadId:state.players.find(p=>p.id===id)?.admin&&state.squads.some(q=>q.id===visit)?visit:null,namespace,epoch});};
  const online=()=>[...sockets].filter(([,set])=>[...set].some(ws=>ws.readyState===1)).map(([id])=>id);
  const snapshot=id=>{const session=accounts.session(id);return {...session,state:{...session.state,settings:{mic:'',squadVolume:85,leadersVolume:100,ducking:true}},revision,onlineIds:online(),voiceUsers:liveUsers,voiceStates:[...voiceStates].map(([userId,value])=>({userId,...value}))};};
  const issue=async(id,remember=false,passwordVersion=accounts.session(id).passwordVersion)=>{if(accounts.session(id).passwordVersion!==passwordVersion)throw new Error('Session expirée. Reconnecte-toi.');const token=await sessions.issue(id,remember,passwordVersion);clearVoice(id);for(const ws of sockets.get(id)||[])ws.close(4001,'session replaced');return {token,...snapshot(id)};};
@@ -58,7 +58,7 @@ export async function startApi(config) {
   const reply=(status,data)=>{res.writeHead(status,{'Content-Type':'application/json; charset=utf-8'});res.end(JSON.stringify(data));};
   try{
    const route=new URL(req.url,'http://localhost').pathname;
-   if(req.method==='GET'&&route==='/health')return reply(200,{name:'UMBRA',version:'0.15.0',needsRegistration:accounts.status().needsRegistration});
+   if(req.method==='GET'&&route==='/health')return reply(200,{name:'UMBRA',version:'0.15.1',needsRegistration:accounts.status().needsRegistration});
    if(req.method==='POST'&&route==='/chat/upload'){
     const id=identify(req),params=new URL(req.url,'http://localhost').searchParams,channelId=params.get('channelId');
     const c=chat.channel(accounts.session(id).state,id,channelId);if(!c.canWrite)throw new Error('Salon en lecture seule.');
@@ -97,7 +97,14 @@ export async function startApi(config) {
    if(req.method==='POST'&&route==='/chat/delete'){await chat.remove(()=>accounts.session(id).state,id,body.channelId);notifyChat({type:'chatChannels'});return reply(200,{ok:true});}
    if(req.method==='POST'&&route==='/chat/discard'){return reply(200,await chat.discard(()=>accounts.session(id).state,id,body.id));}
    if(req.method==='GET'&&route==='/state')return reply(200,snapshot(id));
-   if(req.method==='POST'&&route==='/action'){if(body.type==='settings')throw new Error('Les réglages audio restent locaux à chaque PC.');await accounts.action(body,id);await reconcile();notify();return reply(200,snapshot(id));}
+   if(req.method==='POST'&&route==='/action'){
+    if(body.type==='settings')throw new Error('Les réglages audio restent locaux à chaque PC.');
+    const memberships=()=>new Map(accounts.db.state.squads.flatMap(q=>q.slots.filter(t=>t.playerId).map(t=>[t.playerId,q.id]))),before=memberships();
+    await accounts.action(body,id);const after=memberships();
+    // Joining/changing a squad and a leader's new briefing call restore its normal voice destination.
+    for(const [playerId,target]of visits)if(target==='lobby'&&(before.get(playerId)!==after.get(playerId)||body.type==='briefingJoin'&&after.get(playerId)===body.squadId))visits.delete(playerId);
+    await reconcile();notify();return reply(200,snapshot(id));
+   }
    if(req.method==='POST'&&route==='/replace'){await accounts.replace(body,id);await reconcile();notify();return reply(200,snapshot(id));}
    if(req.method==='POST'&&route==='/tutorial'){await accounts.tutorialDone(id);return reply(200,{ok:true});}
    if(req.method==='POST'&&route==='/logout'){
@@ -107,7 +114,7 @@ export async function startApi(config) {
    if(req.method==='GET'&&route==='/admin/invite'){accounts.admin(id);return reply(200,{joinCode:config.joinCode});}
    if(req.method==='POST'&&route==='/voice/presence'){await refreshPresence();return reply(200,{ok:true});}
    if(req.method==='POST'&&route==='/voice/visit'){
-    accounts.admin(id);if(body.squadId&&!accounts.db.state.squads.some(q=>q.id===body.squadId))throw new Error('Escouade introuvable.');
+    if(body.squadId&&body.squadId!=='lobby'){accounts.admin(id);if(!accounts.db.state.squads.some(q=>q.id===body.squadId))throw new Error('Escouade introuvable.');}
     if(body.squadId)visits.set(id,body.squadId);else visits.delete(id);await reconcile();return reply(200,{ok:true});
    }
    if(req.method==='GET'&&route==='/voice/plan'){

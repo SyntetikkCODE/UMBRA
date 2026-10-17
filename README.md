@@ -6,7 +6,7 @@ Projet communautaire indépendant. Aucune affiliation ou validation par l’édi
 
 ## État de cette copie
 
-La version 0.15.0 ajoute diagnostic vocal, caméra et partage d’écran à la demande, modèles d’escouades et raccourcis personnalisés. La candidature SignPath a été soumise le 16 octobre 2026. **Aucune signature Authenticode SignPath ni acceptation du projet n’est encore acquise.** Les builds de CI non signés sont destinés à la revue ; le téléchargement officiel reste sur le site.
+La version 0.15.1 ajoute la connexion par clic sur les vocaux et l’accueil ouvert à tous, en conservant les ajouts 0.15.0 : diagnostic vocal, caméra et partage d’écran à la demande, modèles d’escouades et raccourcis personnalisés. La candidature SignPath a été soumise le 16 octobre 2026. **Aucune signature Authenticode SignPath ni acceptation du projet n’est encore acquise.** Les builds de CI non signés sont destinés à la revue ; le téléchargement officiel reste sur le site.
 
 L’origine et le statut des icônes de rôle sont décrits dans [ASSET-REVIEW.md](docs/ASSET-REVIEW.md). Ce point doit être clarifié avant de présenter l’ensemble des ressources comme couvertes par une licence open source.
 
@@ -49,7 +49,7 @@ Le test médias utilise une caméra et un micro générés, capture une fenêtre
 npm run dist:unsigned
 ```
 
-Résultat : `dist/UMBRA-Setup-0.15.0-win64.exe`. Les licences sont générées dans le projet, sans dépendre du dossier personnel d’un développeur. Le paquet contient les sources correspondantes LGPL du hook et les notices des dépendances.
+Résultat : `dist/UMBRA-Setup-0.15.1-win64.exe`. Les licences sont générées dans le projet, sans dépendre du dossier personnel d’un développeur. Le paquet contient les sources correspondantes LGPL du hook et les notices des dépendances.
 
 ## Signature et mises à jour
 
