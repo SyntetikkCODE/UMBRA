@@ -1,4 +1,4 @@
-# UMBRA 0.15.4 — Wardogs Companion
+# UMBRA 0.15.5 — Wardogs Companion
 
 Téléchargement officiel : https://umbra.lotus-order.fr/
 
@@ -20,3 +20,5 @@ Notices tierces et sources LGPL : LICENCES. Politique de confidentialité dans l
 - Le partage cible désormais 720p à 30 images/s, avec priorité à la fluidité lorsque le débit est limité. La cadence effective dépend du PC, de la source partagée et du réseau.
 
 - Son du partage : curseur indépendant de 0 à 200 % et sourdine sous la vidéo. Un clic droit (ou le bouton Options) ouvre le menu du stream : arrêter de regarder, lecteur réduit, atténuation pendant les conversations et force réglable. Les réglages sont personnels et mémorisés par joueur, compte et serveur. Un stream doit transmettre du son pour permettre son réglage ; ton propre partage ne te revient pas en écho.
+
+- Réglages → Notes de mise à jour : toutes les versions depuis les premiers prototypes, consultables sans connexion Internet. Clique sur une version pour déplier ses nouveautés et corrections. Historique également sur https://umbra.lotus-order.fr/patchnotes/ et dans CHANGELOG.md sur GitHub.

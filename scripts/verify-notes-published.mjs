@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import {RELEASE_NOTES,releaseNotesMarkdown} from '../src/release-notes.mjs';
+const version=RELEASE_NOTES[0].version,origin='https://umbra.lotus-order.fr';
+const homepage=await fetch(origin+'/?notes='+version);assert.equal(homepage.status,200);assert.ok((await homepage.text()).includes('href="patchnotes/"'));
+const response=await fetch(origin+'/patchnotes/?v='+version);assert.equal(response.status,200);assert.ok(response.headers.get('content-type')?.includes('text/html'));const page=await response.text();
+for(const release of RELEASE_NOTES)assert.ok(page.includes('data-release="'+release.version+'"'),'Missing website release '+release.version);
+assert.equal((page.match(/data-release=/g)||[]).length,RELEASE_NOTES.length);assert.ok(!/<script\b/i.test(page));
+const css=await fetch(origin+'/patchnotes.css?v=1');assert.equal(css.status,200);assert.ok((await css.text()).includes('.patchnotes-release'));
+const github=await fetch('https://raw.githubusercontent.com/SyntetikkCODE/UMBRA/main/CHANGELOG.md?v='+version);assert.equal(github.status,200);assert.equal((await github.text()).replaceAll('\r\n','\n'),releaseNotesMarkdown());
+console.log('PUBLIC PATCHNOTES PASS: home navigation, '+RELEASE_NOTES.length+' website versions, static stylesheet and identical GitHub changelog.');

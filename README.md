@@ -6,9 +6,15 @@ Projet communautaire indépendant. Aucune affiliation ou validation par l’édi
 
 ## État de cette copie
 
-La version 0.15.4 ajoute un volume indépendant du partage d’écran, un menu au clic droit et une atténuation réglable du stream pendant les conversations. Elle conserve le plein écran, le lecteur réduit et le partage ciblant 30 FPS. Le sélecteur sépare les applications et les écrans entiers dans le sélecteur de partage. Elle conserve la connexion par clic sur les vocaux, l’accueil ouvert à tous et les ajouts 0.15.0 : diagnostic vocal, caméra et partage d’écran à la demande, modèles d’escouades et raccourcis personnalisés. La candidature SignPath Foundation a été refusée faute de visibilité publique suffisante. **Aucune signature Authenticode SignPath n’est acquise.** Les builds de CI non signés sont destinés à la revue ; le téléchargement officiel reste sur le site.
+La version 0.15.5 ajoute les notes de mise à jour sur le site, GitHub et dans les réglages hors connexion. La 0.15.4 ajoute un volume indépendant du partage d’écran, un menu au clic droit et une atténuation réglable du stream pendant les conversations. Elle conserve le plein écran, le lecteur réduit et le partage ciblant 30 FPS. Le sélecteur sépare les applications et les écrans entiers dans le sélecteur de partage. Elle conserve la connexion par clic sur les vocaux, l’accueil ouvert à tous et les ajouts 0.15.0 : diagnostic vocal, caméra et partage d’écran à la demande, modèles d’escouades et raccourcis personnalisés. La candidature SignPath Foundation a été refusée faute de visibilité publique suffisante. **Aucune signature Authenticode SignPath n’est acquise.** Les builds de CI non signés sont destinés à la revue ; le téléchargement officiel reste sur le site.
 
 L’origine et le statut des icônes de rôle sont décrits dans [ASSET-REVIEW.md](docs/ASSET-REVIEW.md). Ce point doit être clarifié avant de présenter l’ensemble des ressources comme couvertes par une licence open source.
+
+## Notes de mise à jour
+
+[Historique complet depuis les premiers prototypes](CHANGELOG.md) · [Version sur le site](https://umbra.lotus-order.fr/patchnotes/). Dans l’application : **Réglages → Notes de mise à jour**, même hors connexion.
+
+Les notes se maintiennent dans `src/release-notes.mjs`. `npm run build:notes` régénère le CHANGELOG GitHub et la page statique `site/patchnotes/` ; `npm run check:notes` vérifie leur cohérence. Chaque nouvelle version doit posséder son entrée avant la construction.
 
 ## Fonctionnalités
 

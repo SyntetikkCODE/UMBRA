@@ -20,10 +20,12 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run check:public
+      - run: npm run check:notes
       - run: npm test
       - run: npm run build:vendors
       - run: npm run test:ui
       - run: npm run test:companion
+      - run: npm run test:notes
       - run: npm run dist:unsigned
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: 'false'
