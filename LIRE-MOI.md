@@ -1,4 +1,4 @@
-# UMBRA 0.15.3 — Wardogs Companion
+# UMBRA 0.15.4 — Wardogs Companion
 
 Téléchargement officiel : https://umbra.lotus-order.fr/
 
@@ -12,9 +12,11 @@ Téléchargement officiel : https://umbra.lotus-order.fr/
 
 Les comptes et messages partagés restent sur le serveur choisi. Aucun compte de démonstration n’est ajouté. Aucun enregistrement audio/vidéo n’est effectué par l’application.
 
-La candidature SignPath a été reçue, mais n’est pas encore approuvée. Cette version ne revendique aucune signature Authenticode SignPath. Le canal de mises à jour conserve sa signature Ed25519 existante.
+La candidature SignPath Foundation a été refusée faute de visibilité publique suffisante. Cette version ne revendique aucune signature Authenticode SignPath. Le canal de mises à jour conserve sa signature Ed25519 existante.
 
 Notices tierces et sources LGPL : LICENCES. Politique de confidentialité dans les sources publiques du projet.
 
 - Lecteur vidéo : icônes Plein écran et Lecteur réduit flottant. En plein écran, les commandes micro, casque, caméra, partage et départ du vocal restent accessibles ; Échap quitte le plein écran.
 - Le partage cible désormais 720p à 30 images/s, avec priorité à la fluidité lorsque le débit est limité. La cadence effective dépend du PC, de la source partagée et du réseau.
+
+- Son du partage : curseur indépendant de 0 à 200 % et sourdine sous la vidéo. Un clic droit (ou le bouton Options) ouvre le menu du stream : arrêter de regarder, lecteur réduit, atténuation pendant les conversations et force réglable. Les réglages sont personnels et mémorisés par joueur, compte et serveur. Un stream doit transmettre du son pour permettre son réglage ; ton propre partage ne te revient pas en écho.

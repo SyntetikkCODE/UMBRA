@@ -25,3 +25,5 @@ Cette notice décrit le comportement du code actuel ; elle ne fixe pas à la pla
 
 
 Le lecteur réduit conserve uniquement la lecture du flux choisi lors des changements de page. Il se ferme à l’arrêt du flux, au changement de vocal ou à la déconnexion. Il ne démarre aucune nouvelle capture.
+
+Les volumes, sourdines et préférences d’atténuation des partages restent sur ce PC, séparés par compte et serveur. La détection servant à atténuer un partage analyse localement les microphones déjà reçus dans les vocaux autorisés ; aucun enregistrement ni nouvelle donnée vocale ne sont envoyés.

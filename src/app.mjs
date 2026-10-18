@@ -16,7 +16,7 @@ import { icons } from '../assets/icons.mjs';
 import {SquadTemplates} from './squad-templates.mjs';
 import {SHORTCUT_ACTIONS,validateBindings} from './custom-shortcuts.mjs';
 import {diagnosticChecks} from './voice-diagnostics.mjs';
-import {videoRoomPanel,updateVideoRoom} from './video-room.mjs';
+import {videoRoomPanel,updateVideoRoom,closeVideoMenu} from './video-room.mjs';
 import {mediaIcons} from './media-icons.mjs';
 import { reduce, membership, canManage, leaderAccess, validateState, uid, TYPES, MOODS, OPERATION_TYPES, OPERATION_PHASES, operationForSquad, canManageOperation } from './model.mjs';
 const $ = s => document.querySelector(s);
@@ -31,7 +31,7 @@ let shared=false,serverAddress='',networkOnline=false,voiceUsers=[],onlineIds=[]
 export const voice=new VoiceClient(window.desktop,()=>updateVoiceUI());
 const templates=new SquadTemplates();
 let cameraDevices=[],cameraPreview=null,lastMicLevelDb=null,cameraPreviewGeneration=0,cameraPreviewStarting=false;
-let appVersion='0.15.3', updateState={phase:'portable',startup:false};
+let appVersion='0.15.4', updateState={phase:'portable',startup:false};
 let settingsTab='voice';
 let channelExperiment=localStorage.getItem('umbra-channel-experiment')!=='off',roomMode='voice',gatePreview=null,railWasVisible=false;
 const channelsView=new ChannelsView(window.desktop,()=>refreshChannelsUI(),error=>toast(friendlyError(error),true),message=>chatPing(message),()=>page==='operations'&&roomMode==='text');
@@ -60,6 +60,7 @@ let deferredVideoRender=false;
 function render(){
   if(!state)return;
   if(document.fullscreenElement?.matches('.video-tile')){deferredVideoRender=true;updateVoiceUI();return;}
+  closeVideoMenu();
   if(page==='players'&&!me().admin)page='operations';
   const settingsScroll=page==='settings'?$('.content-scroll')?.scrollTop||0:0;
   channelMenu.close();playerMenu.close();messageMenu.close();voice.setVolumeScope(serverAddress+'|'+state.currentUserId);templates.load(serverAddress+'|'+state.currentUserId);
@@ -568,6 +569,7 @@ async function onSharedEvent(event){
  }
 }
 window.desktop?.onNetwork(onSharedEvent);
+document.addEventListener('umbra:stream-menu',()=>{channelMenu.close();playerMenu.close();messageMenu.close();});
 document.addEventListener('pointerdown',event=>{const b=event.target.closest('[data-ptt]');if(!b||b.disabled)return;b.setPointerCapture(event.pointerId);voice.setPointer(b.dataset.ptt,true);});
 for(const type of ['pointerup','pointercancel'])document.addEventListener(type,event=>{const b=event.target.closest('[data-ptt]');if(b)voice.setPointer(b.dataset.ptt,false);else voice.releasePointers();});
 window.addEventListener('blur',()=>voice.releasePointers());

@@ -5,12 +5,14 @@ import {VoiceSounds} from './voice-sounds.mjs';
 import {validateKeys,prettyKey} from './shortcut-keys.mjs';
 import {ParticipantVolumes,receivedAudioGraph} from './participant-volumes.mjs';
 import {validateBindings,nativeBindings} from './custom-shortcuts.mjs';
+import {StreamAudioPreferences,streamGain} from './stream-audio.mjs';
 export class VoiceClient {
  constructor(bridge,changed=()=>{}) {
   this.bridge=bridge;this.changed=changed;this.enabled=false;this.connecting=false;this.rooms=new Map();this.stream=null;this.audioContext=null;this.frame=null;this.queue=Promise.resolve();this.txQueue=Promise.resolve();this.transmitting=null;this.speaking=false;this.error='';this.muted=false;this.deafened=false;
   this.networkDown=false;this.keys={primary:'F8',leaders:'F9',broadcast:'F10'};this.mode='vad';this.nativeHeld={};this.pointerHeld={};this.settings=audioSettings();this.hooksStarted=false;
   this.voiceDetected=false;this.graph=null;this.sounds=new VoiceSounds();this.lastDestination=null;this.presenceInitialized=false;this.presencePeers=new Set();
   this.participantVolumes=new ParticipantVolumes();
+  this.streamAudioPreferences=new StreamAudioPreferences();this.streamDucking=false;
    this.keyLabels={};this.capturingKey=false;this.bindings=[];this.mediaBusy=false;this.mediaTracks=new Map();this.watching=new Set();this.cameraDevice='';this.lastLevelDb=null;this.onShortcut=()=>{};
    try{const preferences=JSON.parse(localStorage.getItem('umbra-voice')||'{}');this.mode=preferences.mode==='ptt'?'ptt':'vad';this.keys=validateKeys({...this.keys,...preferences.keys});this.keyLabels=preferences.labels||{};}catch{}
   try{this.bindings=validateBindings(this.keys,JSON.parse(localStorage.getItem('umbra-custom-shortcuts')||'[]'));}catch{}
@@ -27,9 +29,12 @@ export class VoiceClient {
  updateSubscriptions(){const room=this.primaryRoom;if(!room)return;for(const p of room.remoteParticipants.values())for(const publication of p.trackPublications.values()){const source=publication.source,subscribe=source===Track.Source.Microphone||this.watching.has(p.identity+':'+source)||source===Track.Source.ScreenShareAudio&&this.watching.has(p.identity+':'+Track.Source.ScreenShare);if(publication.isSubscribed!==subscribe)publication.setSubscribed(subscribe);}}
  async configureBindings(bindings){const next=validateBindings(this.keys,bindings);if(this.enabled&&!this.capturingKey)await this.bridge.pttStart(nativeBindings(this.keys,next));localStorage.setItem('umbra-custom-shortcuts',JSON.stringify(next));this.bindings=next;this.nativeHeld={};await this.applyTransmit();this.reportStatus();this.notify();}
  get label(){return this.rooms.get('primary')?.channel.label||'Vocal déconnecté';}
- setVolumeScope(scope){if(this.participantVolumes.load(scope))this.applyVolumes();}
+ setVolumeScope(scope){const players=this.participantVolumes.load(scope),streams=this.streamAudioPreferences.load(scope);if(players||streams)this.applyVolumes();}
  participantVolume(id){return this.participantVolumes.get(id);}
  setParticipantVolume(id,value){const saved=this.participantVolumes.set(id,value);this.applyVolumes();return saved;}
+ streamAudio(id){return this.streamAudioPreferences.get(id);}
+ setStreamAudio(id,patch){const saved=this.streamAudioPreferences.set(id,patch);this.applyVolumes();this.notify();return saved;}
+ streamHasAudio(id){return !!this.primaryRoom?.remoteParticipants.get(id)?.getTrackPublication(Track.Source.ScreenShareAudio);}
  notify(){this.changed();}
  reportStatus(){this.bridge.voiceStatus?.({connected:this.enabled&&this.rooms.get('primary')?.room.state==='connected',muted:this.effectiveMuted,deafened:this.deafened});}
  async connect(settings){this.enabled=true;this.error='';try{await this.sync(settings);}catch(e){this.error=e.message;await this.disconnect();throw e;}}
@@ -54,6 +59,7 @@ export class VoiceClient {
      if(detected!==this.voiceDetected){this.voiceDetected=detected;if(this.mode==='vad')this.applyTransmit();}
      const active=detected&&!!this.transmitting;
      this.speaking=active;
+     this.updateStreamDucking();
      if(active!==lastSpeaking||this.transmitting!==lastChannel||performance.now()-lastReport>650){lastSpeaking=active;lastChannel=this.transmitting;lastReport=performance.now();this.bridge.voiceActivity(active,this.transmitting||'primary');this.reportStatus();}
      if(active!==this.lastUiSpeaking){this.lastUiSpeaking=active;this.notify();}
      updateMicMeter(level,this.settings,this.vadPreview);
@@ -69,7 +75,7 @@ export class VoiceClient {
      if(!this.enabled||this.rooms.get(c.kind)!==entry)return;
      if(track.kind===Track.Kind.Video){if(c.kind==='primary')this.addVisualTrack(track,publication,participant);return;}
      if(track.kind!==Track.Kind.Audio||!this.audioContext)return;const attached=track.attach();attached.muted=true;attached.volume=0;attached.hidden=true;document.body.append(attached);
-     const graph=receivedAudioGraph(this.audioContext,track.mediaStreamTrack),element=document.createElement('audio');element.srcObject=graph.stream;element.dataset.voiceKind=c.kind;element.dataset.voiceParticipant=participant.identity;element.autoplay=true;element.hidden=true;document.body.append(element);entry.elements.add(element);entry.received.set(track,{graph,element,attached});this.applyVolumes();if(element.setSinkId)element.setSinkId(this.settings.output||'').catch(()=>{});element.play().catch(()=>{this.error='Clique sur Activer le son pour autoriser la lecture.';this.notify();});
+     const graph=receivedAudioGraph(this.audioContext,track.mediaStreamTrack,publication.source===Track.Source.Microphone),element=document.createElement('audio');element.srcObject=graph.stream;element.dataset.voiceKind=c.kind;element.dataset.voiceParticipant=participant.identity;element.dataset.voiceSource=publication.source;element.autoplay=true;element.hidden=true;document.body.append(element);entry.elements.add(element);entry.received.set(track,{graph,element,attached,source:publication.source,gate:createVoiceGate()});this.applyVolumes();if(element.setSinkId)element.setSinkId(this.settings.output||'').catch(()=>{});element.play().catch(()=>{this.error='Clique sur Activer le son pour autoriser la lecture.';this.notify();});
     });
     room.on(RoomEvent.TrackUnsubscribed,track=>{this.removeVisualTrack(track);const received=entry.received.get(track);if(received){received.graph.close();received.element.pause();received.element.srcObject=null;received.element.remove();entry.elements.delete(received.element);entry.received.delete(track);}for(const el of track.detach())el.remove();});
     if(c.kind==='primary'){
@@ -152,10 +158,15 @@ export class VoiceClient {
  async stopScreen(){await this.primaryRoom?.localParticipant.setScreenShareEnabled(false);this.notify();}
  async stopVisualMedia(){this.watching.clear();const room=this.primaryRoom;if(room){const tracks=[...room.localParticipant.trackPublications.values()].filter(p=>[Track.Source.Camera,Track.Source.ScreenShare,Track.Source.ScreenShareAudio].includes(p.source)).map(p=>p.track).filter(Boolean);await Promise.allSettled(tracks.map(track=>room.localParticipant.unpublishTrack(track,true)));for(const track of tracks)track.stop();}for(const {track,local}of this.mediaTracks.values()){for(const el of track.detach())el.remove();if(local)track.stop();}this.mediaTracks.clear();this.notify();}
  applyAudioSettings(){if(this.graph)this.graph.gain.gain.value=this.settings.inputVolume/100;this.sounds.configure(this.settings,this.deafened);this.applyVolumes();}
+ updateStreamDucking(){
+  let active=this.speaking&&!this.effectiveMuted&&!this.deafened;
+  for(const [kind,entry]of this.rooms)for(const received of entry.received?.values()||[]){if(!received.graph.analyser)continue;received.graph.analyser.getFloatTimeDomainData(received.graph.samples);const talking=received.gate(rmsLevel(received.graph.samples),performance.now(),thresholdAmplitude(-48));if(talking&&this.participantVolume(received.element.dataset.voiceParticipant)>0&&playbackVolume(kind,this.settings,{deafened:this.deafened})>0)active=true;}
+  if(active!==this.streamDucking){this.streamDucking=active;this.applyVolumes();}
+ }
  applyVolumes(){
   const leadersActive=this.rooms.get('leaders')?.room.activeSpeakers.some(p=>p.identity!==this.rooms.get('leaders')?.room.localParticipant.identity);
-  for(const[k,e]of this.rooms)for(const el of e.elements)el.volume=playbackVolume(k,this.settings,{deafened:this.deafened,leadersActive});
-  for(const e of this.rooms.values())for(const received of e.received?.values()||[]){const volume=this.participantVolume(received.element.dataset.voiceParticipant);received.graph.gain.gain.setTargetAtTime(volume/100,this.audioContext.currentTime,.015);received.element.dataset.participantGain=String(volume/100);}
+  for(const[k,e]of this.rooms)for(const el of e.elements)el.volume=el.dataset.voiceSource===Track.Source.ScreenShareAudio?(this.deafened?0:this.settings.outputVolume/100):playbackVolume(k,this.settings,{deafened:this.deafened,leadersActive});
+  for(const e of this.rooms.values())for(const received of e.received?.values()||[]){const id=received.element.dataset.voiceParticipant,isStream=received.source===Track.Source.ScreenShareAudio,gain=isStream?streamGain(this.streamAudio(id),this.streamDucking):this.participantVolume(id)/100;received.graph.gain.gain.setTargetAtTime(gain,this.audioContext.currentTime,isStream?.08:.015);received.element.dataset.participantGain=String(gain);}
  }
  observePresence(users,selfId){
   this.lastPresence={users,selfId};
@@ -172,7 +183,7 @@ export class VoiceClient {
   if(this.frame)clearInterval(this.frame);this.frame=null;
   for(const e of this.rooms.values()){try{await e.track?.mute();await e.room.disconnect();}catch{}for(const el of e.elements)el.remove();}
   this.rooms.clear();this.stream?.getTracks().forEach(t=>t.stop());this.stream=null;this.graph?.stream.getTracks().forEach(t=>t.stop());this.graph=null;this.voiceDetected=false;
-  if(this.audioContext)await this.audioContext.close().catch(()=>{});this.audioContext=null;this.transmitting=null;this.speaking=false;
+  if(this.audioContext)await this.audioContext.close().catch(()=>{});this.audioContext=null;this.transmitting=null;this.speaking=false;this.streamDucking=false;
  }
   async disconnect(){const joined=!!this.lastDestination;this.enabled=false;this.reportStatus();this.hooksStarted=false;this.nativeHeld={};this.pointerHeld={};this.lastDestination=null;this.presenceInitialized=false;this.presencePeers.clear();this.sounds.stop();if(joined)await this.sounds.play('leave');await this.clearMedia();await this.bridge.pttStop().catch(()=>{});this.bridge.voiceActivity(false,'primary');await this.bridge.voiceDisconnect().catch(()=>{});this.connecting=false;this.notify();}
 }
