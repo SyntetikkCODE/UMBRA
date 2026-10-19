@@ -1,10 +1,10 @@
-# UMBRA 0.16.2 — Wardogs Companion
+# UMBRA 0.17.0 — Wardogs Companion
 
 Téléchargement officiel : https://umbra.lotus-order.fr/
 
 - Liste des vocaux : clique sur ta squad pour te connecter directement. Les admins peuvent visiter toutes les squads ; l’accueil est ouvert à toute l’équipe. Sans accès à une squad, le clic ouvre sa fiche.
 - Réglages → Voix & vidéo : diagnostic en direct, périphériques, tests micro et caméra.
-- Panneau vocal en bas à gauche : micro, son, caméra, partage et réglages.
+- Panneau vocal en bas à gauche : micro, son, caméra et partage. Les réglages, le guide et la déconnexion du compte sont regroupés près du profil. Les salons textuels peuvent être repliés.
 - Le sélecteur de partage sépare Applications et Écran entier. Applications s’ouvre par défaut ; choisis explicitement une source avant de partager. Le son de Windows est optionnel. Les médias restent dans le vocal actuel et s’arrêtent à sa sortie ou lors d’un déplacement.
 - Clique sur En direct ou sur l’icône caméra près du pseudo pour regarder le flux. Chaque membre du vocal peut partager ; les autres flux ne sont pas chargés automatiquement.
 - Escouades → Modèles : enregistrer une composition sans joueurs et la réutiliser. Les modèles restent sur ce PC, par compte et serveur.
@@ -39,3 +39,7 @@ Notices tierces et sources LGPL : LICENCES. Politique de confidentialité dans l
 - Le diffuseur entend maintenant une confirmation quand son partage est lancé avec succès. Ce son respecte le volume des notifications, la sortie choisie et le casque coupé.
 
 - Déplacement vocal : ajouter un joueur ne déconnecte plus les personnes du salon de destination. Si une liaison vocale est coupée de façon inattendue, l’app tente de la rétablir automatiquement. Au retrait d’un invité, une brève resynchronisation reste possible pour révoquer son ancien accès privé, sans reconnexion manuelle.
+
+- Répartition dans le casque : Réglages → Voix & vidéo → Transmission & écoute. Choisis les deux oreilles, la gauche ou la droite pour chaque réseau ; le réglage est local et ne change pas le son stéréo des partages.
+- Annonce générale est accessible à tous les joueurs connectés au vocal en maintenant leur touche (F10 par défaut). Les leaders conservent leur réseau réservé.
+- Barre des tâches Windows : pastille blanche pour les messages non lus, rouge pour les mentions personnelles et @everyone. Lire le salon concerné retire ses notifications ; les autres restent signalées.

@@ -2,6 +2,13 @@
 // Early prototypes are grouped because their individual release logs were not retained.
 export const HISTORY_NOTE='Historique reconstitué à partir des archives et des versions conservées. Les prototypes 0.1 à 0.3.1 sont regroupés ; les versions suivantes sont détaillées séparément. Les notes décrivent les changements de chaque époque, pas uniquement le fonctionnement actuel.';
 export const RELEASE_NOTES=[
+ {version:'0.17.0',title:'Salons plus lisibles et écoute par oreille',date:'2026-10-20',changes:[
+  'La position de lecture est conservée dans les discussions, les pages et la liste des vocaux pendant les synchronisations et les actions. Le chargement d’anciens messages garde le message lu à la même hauteur ; les nouveaux messages suivent le bas uniquement si tu y étais déjà.',
+  'La navigation et les commandes du bas de la barre latérale sont regroupées pour laisser davantage de hauteur aux vocaux et à leurs joueurs. Les salons textuels peuvent être repliés. Les boutons de salons dupliqués au-dessus du chat et les animations rejouées à chaque actualisation sont retirés.',
+  'Tous les joueurs connectés au vocal peuvent parler dans Annonce générale avec leur touche push-to-talk, même sans grade ni escouade. Le réseau des leaders conserve ses droits propres.',
+  'Réglages → Voix & vidéo → Transmission & écoute : choisir Deux oreilles, Gauche uniquement ou Droite uniquement séparément pour Squad / briefing, Leaders et Annonce générale. Les choix restent sur ton PC, s’appliquent en direct et conservent le son stéréo des partages d’écran.',
+  'L’icône UMBRA dans la barre des tâches Windows affiche une pastille blanche pour les messages non lus, rouge pour une mention personnelle ou @everyone. La pastille suit les salons encore non lus et disparaît après leur lecture ou la déconnexion du compte.'
+ ]},
  {version:'0.16.2',title:'Son de l’application partagée',date:'2026-10-19',changes:[
   'Quand tu partages une fenêtre avec le son, seul le programme sélectionné est transmis. Plusieurs fenêtres d’un même programme peuvent partager leur son. Sur une version de Windows incompatible, le partage de fenêtre reste disponible sans son.',
   'Le partage d’un écran entier conserve l’option de transmettre tous les sons du PC. La case audio est remise à zéro au changement d’onglet pour confirmer le nouveau périmètre.',

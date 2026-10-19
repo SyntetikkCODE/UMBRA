@@ -4,6 +4,7 @@ const fs = require('node:fs/promises');
 const { pathToFileURL } = require('node:url');
 protocol.registerSchemesAsPrivileged([{ scheme: 'umbra', privileges: { standard: true, secure: true, supportFetchAPI: true, corsEnabled: true } }]);
 app.setName('UMBRA');
+if(process.platform==='win32')app.setAppUserModelId('fr.lotus-order.umbra');
 app.setPath('userData',path.join(app.getPath('appData'),'UMBRA'));
 if (process.env.UMBRA_DATA_DIR) app.setPath('userData', path.resolve(process.env.UMBRA_DATA_DIR));
 if (!app.requestSingleInstanceLock()) { app.quit(); } else {
@@ -94,6 +95,7 @@ app.whenReady().then(async () => {
   handle('updates:install',()=>updates.install());
   handle('auth:status', async()=>remote?{...await remote.request('health'),shared:true,baseUrl:remote.base}:{...accounts.status(),shared:false});
   handle('text:copy',text=>{if(typeof text!=='string'||text.length>20000)throw new Error('Texte invalide.');clipboard.writeText(text);return true;});
+  handle('notifications:badge',value=>require('./src/taskbar-badge.cjs').setTaskbarBadge(win,nativeImage,value));
   handle('auth:register',credentials=>authenticate('register',credentials));
   handle('auth:login',credentials=>authenticate('login',credentials));
   handle('auth:reset',async credentials=>{if(remote)return remote.request('auth/reset',credentials);const r=await accounts.resetPassword(credentials);await remembered.clear();return {ok:true};});
@@ -103,7 +105,7 @@ app.whenReady().then(async () => {
     try{const r=remote?await remote.resume(savedSession.token):accounts.session(savedSession.userId);if(!remote)accounts.userId=savedSession.userId;r.state=withPreferences(r.state);return r;}
     catch(error){if(!remote||error.status===401)await remembered.clear();return null;}
   });
-  handle('auth:logout', async()=>{ptt.stop();await remembered.clear();if(remote)await remote.logout().catch(()=>{});else await accounts.logout();});
+  handle('auth:logout', async()=>{ptt.stop();require('./src/taskbar-badge.cjs').setTaskbarBadge(win,nativeImage,{unread:0,mentions:0});await remembered.clear();if(remote)await remote.logout().catch(()=>{});else await accounts.logout();});
   handle('auth:tutorial', ()=>remote?remote.request('tutorial',{}):accounts.tutorialDone());
   handle('state:load', async()=>{const r=remote?await remote.request('state'):accounts.session();r.state=withPreferences(r.state);return r;});
   handle('state:action', async action=>{

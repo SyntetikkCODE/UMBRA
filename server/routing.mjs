@@ -17,7 +17,6 @@ export function voiceChannels(state,userId,{visitSquadId=null,visitLobby=false,f
  const channels=[primary];
  const leaders=state.players.filter(p=>leaderAccess(state,p.id)).map(p=>p.id);
  if(leaderAccess(state,userId))channels.push(make('leaders','leaders','Leaders de la team',leaders));
- const commanderIds=state.players.filter(p=>p.commander).map(p=>p.id);
- channels.push(make('broadcast','announcements','Annonce générale',[...state.players.map(p=>p.id),...commanderIds.map(id=>'speaker:'+id)],player.commander));
+ channels.push(make('broadcast','announcements','Annonce générale',state.players.map(p=>p.id)));
  return channels;
 }

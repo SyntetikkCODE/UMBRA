@@ -8,6 +8,7 @@ contextBridge.exposeInMainWorld('desktop', {
   load: () => ipcRenderer.invoke('state:load'),
   action: action => ipcRenderer.invoke('state:action', action),
   chat: (method,data) => ipcRenderer.invoke('chat:request',method,data),
+  notificationBadge: value => ipcRenderer.invoke('notifications:badge',value),
   replace: state => ipcRenderer.invoke('state:replace', state),
   authStatus: () => ipcRenderer.invoke('auth:status'),
   resumeSession: () => ipcRenderer.invoke('auth:resume'),

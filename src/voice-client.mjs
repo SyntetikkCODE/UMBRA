@@ -174,7 +174,7 @@ export class VoiceClient {
  applyVolumes(){
   const leadersActive=this.rooms.get('leaders')?.room.activeSpeakers.some(p=>p.identity!==this.rooms.get('leaders')?.room.localParticipant.identity);
   for(const[k,e]of this.rooms)for(const el of e.elements)el.volume=el.dataset.voiceSource===Track.Source.ScreenShareAudio?(this.deafened?0:this.settings.outputVolume/100):playbackVolume(k,this.settings,{deafened:this.deafened,leadersActive});
-  for(const e of this.rooms.values())for(const received of e.received?.values()||[]){const id=received.element.dataset.voiceParticipant,isStream=received.source===Track.Source.ScreenShareAudio,gain=isStream?streamGain(this.streamAudio(id),this.streamDucking):this.participantVolume(id)/100;received.graph.gain.gain.setTargetAtTime(gain,this.audioContext.currentTime,isStream?.08:.015);received.element.dataset.participantGain=String(gain);}
+  for(const [kind,e] of this.rooms)for(const received of e.received?.values()||[]){received.graph.setEar(this.settings[kind+'Ear']||'both');const id=received.element.dataset.voiceParticipant,isStream=received.source===Track.Source.ScreenShareAudio,gain=isStream?streamGain(this.streamAudio(id),this.streamDucking):this.participantVolume(id)/100;received.graph.gain.gain.setTargetAtTime(gain,this.audioContext.currentTime,isStream?.08:.015);received.element.dataset.participantGain=String(gain);}
  }
  observePresence(users,selfId){
   this.lastPresence={users,selfId};

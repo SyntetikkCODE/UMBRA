@@ -59,7 +59,7 @@ export async function startApi(config) {
   const reply=(status,data)=>{res.writeHead(status,{'Content-Type':'application/json; charset=utf-8'});res.end(JSON.stringify(data));};
   try{
    const route=new URL(req.url,'http://localhost').pathname;
-   if(req.method==='GET'&&route==='/health')return reply(200,{name:'UMBRA',version:'0.16.2',needsRegistration:accounts.status().needsRegistration});
+   if(req.method==='GET'&&route==='/health')return reply(200,{name:'UMBRA',version:'0.17.0',needsRegistration:accounts.status().needsRegistration});
    if(req.method==='POST'&&route==='/chat/upload'){
     const id=identify(req),params=new URL(req.url,'http://localhost').searchParams,channelId=params.get('channelId');
     const c=chat.channel(accounts.session(id).state,id,channelId);if(!c.canWrite)throw new Error('Salon en lecture seule.');

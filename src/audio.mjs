@@ -1,4 +1,4 @@
-export const DEFAULT_AUDIO=Object.freeze({mic:'',output:'',inputVolume:100,outputVolume:100,squadVolume:85,leadersVolume:100,ducking:true,notificationSounds:true,soundsVolume:35,audioProfile:'standard',noiseSuppression:true,echoCancellation:true,autoGainControl:false,vadThresholdDb:-48});
+export const DEFAULT_AUDIO=Object.freeze({mic:'',output:'',inputVolume:100,outputVolume:100,squadVolume:85,leadersVolume:100,primaryEar:'both',leadersEar:'both',broadcastEar:'both',ducking:true,notificationSounds:true,soundsVolume:35,audioProfile:'standard',noiseSuppression:true,echoCancellation:true,autoGainControl:false,vadThresholdDb:-48});
 export function captureOptions(settings){const s=audioSettings(settings);return {echoCancellation:s.echoCancellation,noiseSuppression:s.noiseSuppression,autoGainControl:s.autoGainControl};}
 export const audioSettings=value=>({...DEFAULT_AUDIO,...value});
 export function validateAudio(t){
@@ -7,6 +7,7 @@ export function validateAudio(t){
   const v=t[key]??DEFAULT_AUDIO[key];if(!Number.isFinite(v)||v<0||v>max)throw new Error('Réglages invalides : volume audio hors limites.');
  }
  if(t.notificationSounds!==undefined&&typeof t.notificationSounds!=='boolean')throw new Error('Réglages des sons invalides.');
+ for(const key of ['primaryEar','leadersEar','broadcastEar'])if(t[key]!==undefined&&!['both','left','right'].includes(t[key]))throw new Error('Choisis les deux oreilles, la gauche ou la droite.');
  if(t.audioProfile!==undefined&&!['standard','studio','custom'].includes(t.audioProfile))throw new Error('Profil audio invalide.');
  for(const key of ['noiseSuppression','echoCancellation','autoGainControl'])if(t[key]!==undefined&&typeof t[key]!=='boolean')throw new Error('Traitement audio invalide.');
  if(t.vadThresholdDb!==undefined&&(!Number.isFinite(t.vadThresholdDb)||t.vadThresholdDb< -65||t.vadThresholdDb> -20))throw new Error('Seuil de détection invalide (-65 à -20 dB).');
