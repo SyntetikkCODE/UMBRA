@@ -1,4 +1,10 @@
 {
-  "extends":"./electron-builder.json",
-  "forceCodeSigning":true
+  "extends": "./electron-builder.json",
+  "forceCodeSigning": true,
+  "extraResources": [
+    {
+      "from": "native/bin/UMBRA.AudioCapture.exe",
+      "to": "UMBRA.AudioCapture.exe"
+    }
+  ]
 }

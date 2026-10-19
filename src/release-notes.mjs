@@ -2,6 +2,13 @@
 // Early prototypes are grouped because their individual release logs were not retained.
 export const HISTORY_NOTE='Historique reconstitué à partir des archives et des versions conservées. Les prototypes 0.1 à 0.3.1 sont regroupés ; les versions suivantes sont détaillées séparément. Les notes décrivent les changements de chaque époque, pas uniquement le fonctionnement actuel.';
 export const RELEASE_NOTES=[
+ {version:'0.16.2',title:'Son de l’application partagée',date:'2026-10-19',changes:[
+  'Quand tu partages une fenêtre avec le son, seul le programme sélectionné est transmis. Plusieurs fenêtres d’un même programme peuvent partager leur son. Sur une version de Windows incompatible, le partage de fenêtre reste disponible sans son.',
+  'Le partage d’un écran entier conserve l’option de transmettre tous les sons du PC. La case audio est remise à zéro au changement d’onglet pour confirmer le nouveau périmètre.',
+  'Un son de confirmation est maintenant joué pour le diffuseur après le lancement réussi du partage, en plus de l’alerte reçue par les autres joueurs. Les réglages de notification et de sortie audio sont respectés.',
+  'La capture du son de l’application s’arrête avec le partage, le changement de vocal, la fermeture de la fenêtre ou de l’app. Si elle échoue, aucun remplacement par le son global du PC n’est effectué.',
+  'Déplacements administrateurs : l’arrivée d’un joueur ne recrée plus le salon de destination et laisse les membres présents connectés. Une reconnexion automatique restaure aussi un vocal coupé sans demander de cliquer sur Connexion.'
+ ]},
  {version:'0.16.1',title:'Raccourci ² sur clavier français',date:'2026-10-19',changes:[
   'Correction de la touche ² des claviers AZERTY français : son code Windows est maintenant correctement reconnu pour le push-to-talk et les actions personnalisées, y compris en arrière-plan.',
   'Les raccourcis ² déjà enregistrés sont pris en charge grâce au libellé mémorisé, sans devoir les recréer. Les appuis répétés ne déclenchent pas plusieurs bascules et le relâchement arrête la transmission.',

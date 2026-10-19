@@ -4,6 +4,14 @@ Historique reconstitué à partir des archives et des versions conservées. Les 
 
 [Application et téléchargement](https://umbra.lotus-order.fr/) · [Historique sur le site](https://umbra.lotus-order.fr/patchnotes/)
 
+## 0.16.2 — Son de l’application partagée (2026-10-19)
+
+- Quand tu partages une fenêtre avec le son, seul le programme sélectionné est transmis. Plusieurs fenêtres d’un même programme peuvent partager leur son. Sur une version de Windows incompatible, le partage de fenêtre reste disponible sans son.
+- Le partage d’un écran entier conserve l’option de transmettre tous les sons du PC. La case audio est remise à zéro au changement d’onglet pour confirmer le nouveau périmètre.
+- Un son de confirmation est maintenant joué pour le diffuseur après le lancement réussi du partage, en plus de l’alerte reçue par les autres joueurs. Les réglages de notification et de sortie audio sont respectés.
+- La capture du son de l’application s’arrête avec le partage, le changement de vocal, la fermeture de la fenêtre ou de l’app. Si elle échoue, aucun remplacement par le son global du PC n’est effectué.
+- Déplacements administrateurs : l’arrivée d’un joueur ne recrée plus le salon de destination et laisse les membres présents connectés. Une reconnexion automatique restaure aussi un vocal coupé sans demander de cliquer sur Connexion.
+
 ## 0.16.1 — Raccourci ² sur clavier français (2026-10-19)
 
 - Correction de la touche ² des claviers AZERTY français : son code Windows est maintenant correctement reconnu pour le push-to-talk et les actions personnalisées, y compris en arrière-plan.

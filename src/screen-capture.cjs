@@ -8,4 +8,10 @@ function createCaptureSelection(now=Date.now){
   clear(){choice=null;available.clear();until=0;}
  };
 }
-module.exports={createCaptureSelection};
+function captureStreams(source,choice,audioRequested,applicationAudio){
+ if(!source||source.id!==choice.id)return null;
+ const windowSource=source.id.startsWith('window:');
+ if(windowSource&&choice.audio){if(!applicationAudio.supported())return null;applicationAudio.authorize(source.id);}
+ return {video:source,...(!windowSource&&choice.audio&&audioRequested?{audio:'loopback'}:{})};
+}
+module.exports={createCaptureSelection,captureStreams};

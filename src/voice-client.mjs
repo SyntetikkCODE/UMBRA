@@ -6,6 +6,7 @@ import {validateKeys,prettyKey} from './shortcut-keys.mjs';
 import {ParticipantVolumes,receivedAudioGraph} from './participant-volumes.mjs';
 import {validateBindings,nativeBindings} from './custom-shortcuts.mjs';
 import {StreamAudioPreferences,streamGain} from './stream-audio.mjs';
+import {applicationAudio} from './application-audio.mjs';
 import {screenQuality,screenShareOptions} from './screen-quality.mjs';
 export class VoiceClient {
  constructor(bridge,changed=()=>{}) {
@@ -68,7 +69,7 @@ export class VoiceClient {
     };tick();this.frame=setInterval(tick,25);
    }
    const desired=new Map(plan.channels.map(c=>[c.kind,c]));
-   for(const[k,entry]of this.rooms)if(desired.get(k)?.room!==entry.channel.room){if(k==='primary')await this.stopVisualMedia();await entry.track?.mute();await entry.room.disconnect();this.rooms.delete(k);}
+   for(const[k,entry]of this.rooms)if(desired.get(k)?.room!==entry.channel.room||entry.room.state==='disconnected'){entry.disposing=true;clearTimeout(entry.recoverTimer);if(k==='primary')await this.stopVisualMedia();await entry.track?.mute();await entry.room.disconnect();this.rooms.delete(k);}
    for(const c of plan.channels){
     if(this.rooms.has(c.kind)){this.rooms.get(c.kind).channel=c;continue;}
     const room=new Room({adaptiveStream:false,dynacast:false,disconnectOnPageLeave:true,audioOutput:{deviceId:this.settings.output||''},publishDefaults:{audioPreset:AudioPresets.speech,dtx:true,red:true}});
@@ -84,14 +85,14 @@ export class VoiceClient {
      room.on(RoomEvent.TrackPublished,publication=>{if(entry.ready&&this.enabled&&this.rooms.get('primary')===entry&&publication.source===Track.Source.ScreenShare)this.sounds.play('share-start');this.updateSubscriptions();this.notify();});room.on(RoomEvent.TrackUnpublished,()=>{this.updateSubscriptions();this.notify();});
      room.on(RoomEvent.ParticipantDisconnected,()=>this.notify());
      room.on(RoomEvent.LocalTrackPublished,publication=>{if(publication.track?.kind===Track.Kind.Video)this.addVisualTrack(publication.track,publication,room.localParticipant,true);this.notify();});
-     room.on(RoomEvent.LocalTrackUnpublished,publication=>{if(publication.track)this.removeVisualTrack(publication.track);this.notify();});
+     room.on(RoomEvent.LocalTrackUnpublished,publication=>{if(publication.source===Track.Source.ScreenShare)this.stopApplicationAudio().catch(()=>{});if(publication.track)this.removeVisualTrack(publication.track);this.notify();});
      room.on(RoomEvent.TrackMuted,()=>this.notify());room.on(RoomEvent.TrackUnmuted,()=>this.notify());
      room.on(RoomEvent.ConnectionQualityChanged,()=>this.notify());
     }
     room.on(RoomEvent.ActiveSpeakersChanged,()=>this.applyVolumes());
     room.on(RoomEvent.Reconnecting,()=>{this.connecting=true;this.notify();});
     room.on(RoomEvent.Reconnected,()=>{this.connecting=false;this.applyTransmit();this.notify();});
-    room.on(RoomEvent.Disconnected,()=>{if(c.kind==='primary'&&this.rooms.get(c.kind)===entry)this.stopVisualMedia().catch(()=>{});for(const received of entry.received.values()){received.graph.close();received.element.pause();received.element.srcObject=null;received.element.remove();received.attached.remove();}entry.received.clear();entry.elements.clear();this.notify();});
+    room.on(RoomEvent.Disconnected,()=>{if(c.kind==='primary'&&this.rooms.get(c.kind)===entry)this.stopVisualMedia().catch(()=>{});for(const received of entry.received.values()){received.graph.close();received.element.pause();received.element.srcObject=null;received.element.remove();received.attached.remove();}entry.received.clear();entry.elements.clear();if(this.enabled&&!entry.disposing){clearTimeout(entry.recoverTimer);entry.recoverTimer=setTimeout(()=>{if(this.enabled&&this.rooms.get(c.kind)===entry&&entry.room.state==='disconnected')this.sync(this.settings).catch(error=>{this.error=error.message;this.notify();});},250);}this.notify();});
     await room.connect(plan.url,c.token,{autoSubscribe:c.kind!=='primary'});entry.ready=true;if(c.kind==='primary')this.updateSubscriptions();
     if(!this.enabled){await room.disconnect();return;}
     if(c.canPublish){entry.track=new LocalAudioTrack(this.graph.stream.getAudioTracks()[0].clone(),undefined,true);await entry.track.mute();await room.localParticipant.publishTrack(entry.track,{source:Track.Source.Microphone,audioPreset:AudioPresets.speech,dtx:true,red:true});}
@@ -99,7 +100,7 @@ export class VoiceClient {
    if(!this.hooksStarted){await this.bridge.pttStart(this.shortcutKeys);this.hooksStarted=true;}
    await Promise.all([...this.rooms.values()].map(e=>e.room.switchActiveDevice('audiooutput',this.settings.output||'')));
    await Promise.all([...this.rooms.values()].flatMap(e=>[...e.elements].filter(el=>el.setSinkId).map(el=>el.setSinkId(this.settings.output||''))));
-   await this.applyTransmit();await this.bridge.voicePresence();this.applyAudioSettings();this.error='';
+   await this.applyTransmit();await this.bridge.voicePresence();if([...this.rooms.values()].some(e=>e.room.state!=='connected'))throw new Error('Reconnexion au vocal…');this.applyAudioSettings();this.error='';
    const destination=primaryDestination(this.rooms.get('primary')?.channel);
    if(destination!==this.lastDestination){const sound=this.lastDestination?'move':'join';this.lastDestination=destination;this.presenceInitialized=false;this.sounds.play(sound);}
    if(this.lastPresence)this.observePresence(this.lastPresence.users,this.lastPresence.selfId);
@@ -154,12 +155,16 @@ export class VoiceClient {
  }
  async startScreen(sourceId,audio=false,quality=this.screenQuality){
   const room=this.primaryRoom;if(!this.enabled||room?.state!=='connected')throw new Error('Rejoins un vocal avant de partager ton écran.');
-  const options=screenShareOptions(quality,audio);
+  const windowAudio=audio&&sourceId.startsWith('window:'),options=screenShareOptions(quality,audio&&!windowAudio);
   if(this.mediaBusy)throw new Error('Un changement vidéo est déjà en cours.');this.mediaBusy=true;this.notify();
-  try{await this.bridge.selectCapture(sourceId,audio);await room.localParticipant.setScreenShareEnabled(true,options.capture,options.publish);if(this.primaryRoom!==room||!this.enabled)await room.localParticipant.setScreenShareEnabled(false);else{this.screenQuality=quality;localStorage.setItem('umbra-screen-quality',quality);}}finally{await this.bridge.cancelCapture().catch(()=>{});this.mediaBusy=false;this.notify();}
+  try{await this.bridge.selectCapture(sourceId,audio);await room.localParticipant.setScreenShareEnabled(true,options.capture,options.publish);
+   if(windowAudio&&this.primaryRoom===room&&this.enabled){const graph=await applicationAudio(this.bridge,sourceId,error=>{this.error=error.message;this.stopScreen().catch(()=>{});this.notify();});this.applicationAudio=graph;if(this.primaryRoom!==room||!this.enabled)await this.stopApplicationAudio();else await room.localParticipant.publishTrack(new LocalAudioTrack(graph.stream.getAudioTracks()[0],undefined,true),{...options.publish,source:Track.Source.ScreenShareAudio});}
+   if(this.primaryRoom!==room||!this.enabled)await room.localParticipant.setScreenShareEnabled(false);else{this.screenQuality=quality;localStorage.setItem('umbra-screen-quality',quality);this.sounds.play('share-start');}
+  }catch(error){await this.stopApplicationAudio();await room.localParticipant.setScreenShareEnabled(false).catch(()=>{});throw error;}finally{await this.bridge.cancelCapture().catch(()=>{});this.mediaBusy=false;this.notify();}
  }
- async stopScreen(){await this.primaryRoom?.localParticipant.setScreenShareEnabled(false);this.notify();}
- async stopVisualMedia(){this.watching.clear();const room=this.primaryRoom;if(room){const tracks=[...room.localParticipant.trackPublications.values()].filter(p=>[Track.Source.Camera,Track.Source.ScreenShare,Track.Source.ScreenShareAudio].includes(p.source)).map(p=>p.track).filter(Boolean);await Promise.allSettled(tracks.map(track=>room.localParticipant.unpublishTrack(track,true)));for(const track of tracks)track.stop();}for(const {track,local}of this.mediaTracks.values()){for(const el of track.detach())el.remove();if(local)track.stop();}this.mediaTracks.clear();this.notify();}
+ async stopApplicationAudio(){const graph=this.applicationAudio;this.applicationAudio=null;if(graph)await graph.close();else await this.bridge.stopApplicationAudio?.().catch(()=>{});}
+ async stopScreen(){await this.stopApplicationAudio();await this.primaryRoom?.localParticipant.setScreenShareEnabled(false);this.notify();}
+ async stopVisualMedia(){await this.stopApplicationAudio();this.watching.clear();const room=this.primaryRoom;if(room){const tracks=[...room.localParticipant.trackPublications.values()].filter(p=>[Track.Source.Camera,Track.Source.ScreenShare,Track.Source.ScreenShareAudio].includes(p.source)).map(p=>p.track).filter(Boolean);await Promise.allSettled(tracks.map(track=>room.localParticipant.unpublishTrack(track,true)));for(const track of tracks)track.stop();}for(const {track,local}of this.mediaTracks.values()){for(const el of track.detach())el.remove();if(local)track.stop();}this.mediaTracks.clear();this.notify();}
  applyAudioSettings(){if(this.graph)this.graph.gain.gain.value=this.settings.inputVolume/100;this.sounds.configure(this.settings,this.deafened);this.applyVolumes();}
  updateStreamDucking(){
   let active=this.speaking&&!this.effectiveMuted&&!this.deafened;
@@ -184,7 +189,7 @@ export class VoiceClient {
  async clearMedia(){
   await this.stopVisualMedia();this.lastLevelDb=null;
   if(this.frame)clearInterval(this.frame);this.frame=null;
-  for(const e of this.rooms.values()){try{await e.track?.mute();await e.room.disconnect();}catch{}for(const el of e.elements)el.remove();}
+  for(const e of this.rooms.values()){e.disposing=true;clearTimeout(e.recoverTimer);try{await e.track?.mute();await e.room.disconnect();}catch{}for(const el of e.elements)el.remove();}
   this.rooms.clear();this.stream?.getTracks().forEach(t=>t.stop());this.stream=null;this.graph?.stream.getTracks().forEach(t=>t.stop());this.graph=null;this.voiceDetected=false;
   if(this.audioContext)await this.audioContext.close().catch(()=>{});this.audioContext=null;this.transmitting=null;this.speaking=false;this.streamDucking=false;
  }

@@ -16,6 +16,8 @@ let ptt;
 let updates;
 let defaultAudio;
 const captureSelection=require('./src/screen-capture.cjs').createCaptureSelection();
+const applicationAudio=require('./src/application-audio.cjs').createApplicationAudio({executable:app.isPackaged?path.join(process.resourcesPath,'UMBRA.AudioCapture.exe'):path.join(__dirname,'native/bin/UMBRA.AudioCapture.exe'),send:event=>{if(!win||win.isDestroyed())return false;win.webContents.send('capture:audio-data',event);return true;}});
+app.on('before-quit',()=>applicationAudio.stop());
 const {mediaPermissionCheck,mediaPermissionRequest}=require('./src/media-permissions.cjs');
 const withPreferences=state=>({...state,settings:{...defaultAudio,...(remote?audioPreferences:state.settings)}});
 
@@ -26,6 +28,9 @@ function createWindow() {
   win = new BrowserWindow({ width: 1540, height: 990, minWidth: 1120, minHeight: 740, frame: false, backgroundColor: '#101010', show: false, title: 'UMBRA — Wardogs Companion', icon: path.join(__dirname, 'assets/umbra.ico'), webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true, backgroundThrottling: false } });
   win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   win.webContents.on('will-navigate', (e, url) => { if (!url.startsWith('umbra://app/')) e.preventDefault(); });
+  win.webContents.on('render-process-gone',()=>applicationAudio.stop());
+  win.webContents.on('did-start-navigation',(_event,_url,inPlace,mainFrame)=>{if(mainFrame&&!inPlace)applicationAudio.stop();});
+  win.on('closed',()=>applicationAudio.stop());
   win.once('ready-to-show', () => win.show());
   win.loadURL('umbra://app/index.html');
 }
@@ -76,7 +81,7 @@ app.whenReady().then(async () => {
   session.defaultSession.setDisplayMediaRequestHandler(async(request,callback)=>{
     if(request.frame!==win?.webContents.mainFrame||!request.frame.url.startsWith('umbra://app/'))return callback(null);
     const chosen=captureSelection.consume();if(!chosen)return callback(null);
-    try{const sources=await desktopCapturer.getSources({types:['screen','window'],thumbnailSize:{width:0,height:0}}),source=sources.find(s=>s.id===chosen.id);callback(source?{video:source,...(chosen.audio&&request.audioRequested?{audio:'loopback'}:{})}:null);}catch{callback(null);}
+    try{const sources=await desktopCapturer.getSources({types:['screen','window'],thumbnailSize:{width:0,height:0}}),source=sources.find(s=>s.id===chosen.id);callback(require('./src/screen-capture.cjs').captureStreams(source,chosen,request.audioRequested,applicationAudio));}catch{callback(null);}
   });
   const handle = (channel, fn) => ipcMain.handle(channel, async (e, ...args) => {
     guard(e); if(startupError&&!remote&&!channel.startsWith('network:')&&!channel.startsWith('updates:')) throw new Error(startupError); return fn(...args);
@@ -138,9 +143,11 @@ app.whenReady().then(async () => {
     const candidate=JSON.parse(await fs.readFile(result.filePaths[0],'utf8'));if(remote){const {validateState}=await import('./src/model.mjs');validateState(candidate);return candidate;}return accounts.validateImport(candidate);
   });
   handle('network:info',()=>({shared:!!remote,url:remote?.base||'',keys:ptt.keys,version:app.getVersion()}));
-  handle('capture:sources',async()=>{if(remote)await remote.request('state');else accounts.session();win.show();win.focus();const sources=await desktopCapturer.getSources({types:['screen','window'],thumbnailSize:{width:300,height:180},fetchWindowIcons:false});captureSelection.list(sources);return sources.map(s=>({id:s.id,name:s.name,type:s.id.startsWith('screen:')?'screen':'application',thumbnail:s.thumbnail.toDataURL()}));});
-  handle('capture:select',(id,audio)=>{captureSelection.select(id,audio);return true;});
-  handle('capture:cancel',()=>{captureSelection.clear();return true;});
+  handle('capture:sources',async()=>{if(remote)await remote.request('state');else accounts.session();win.show();win.focus();const sources=await desktopCapturer.getSources({types:['screen','window'],thumbnailSize:{width:300,height:180},fetchWindowIcons:false});captureSelection.list(sources);return sources.map(s=>({id:s.id,name:s.name,type:s.id.startsWith('screen:')?'screen':'application',applicationAudio:applicationAudio.supported(),thumbnail:s.thumbnail.toDataURL()}));});
+  handle('capture:select',(id,audio)=>{applicationAudio.cancelGrant();if(audio&&id?.startsWith('window:')&&!applicationAudio.supported())throw new Error('Le son d’une application n’est pas disponible sur cette version de Windows. Partage l’image sans le son.');captureSelection.select(id,audio);return true;});
+  handle('capture:cancel',()=>{captureSelection.clear();applicationAudio.cancelGrant();return true;});
+  handle('capture:audio-start',(id,sessionId)=>applicationAudio.start(id,sessionId));
+  handle('capture:audio-stop',id=>applicationAudio.stop(id));
   handle('network:configure',async url=>{if(url)url=serverUrl(url);if(!remote&&url)audioPreferences=accounts.db?.state?.settings||audioPreferences||defaultAudio;ptt.stop();await remembered.clear();setRemote(url);await saveConnection();return {shared:!!remote,url:remote?.base||''};});
   handle('network:invite',()=>{if(!remote)throw new Error('Connexion au serveur requise.');return remote.request('admin/invite');});
   handle('voice:plan',()=>{if(!remote)throw new Error('Connecte-toi à un serveur partagé pour utiliser le vocal.');return remote.request('voice/plan');});

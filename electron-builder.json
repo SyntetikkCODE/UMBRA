@@ -30,6 +30,10 @@
     {
       "from": "LIRE-MOI.md",
       "to": "LIRE-MOI.md"
+    },
+    {
+      "from": "native/AudioCapture.cs",
+      "to": "LICENCES/UMBRA-AudioCapture.cs"
     }
   ],
   "publish": [
@@ -65,5 +69,11 @@
     ],
     "runAfterFinish": true,
     "packElevateHelper": false
-  }
+  },
+  "extraResources": [
+    {
+      "from": "native/bin/UMBRA.AudioCapture.exe",
+      "to": "UMBRA.AudioCapture.exe"
+    }
+  ]
 }
