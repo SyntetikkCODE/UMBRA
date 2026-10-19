@@ -1,4 +1,4 @@
-# UMBRA 0.15.5 — Wardogs Companion
+# UMBRA 0.16.0 — Wardogs Companion
 
 Téléchargement officiel : https://umbra.lotus-order.fr/
 
@@ -22,3 +22,12 @@ Notices tierces et sources LGPL : LICENCES. Politique de confidentialité dans l
 - Son du partage : curseur indépendant de 0 à 200 % et sourdine sous la vidéo. Un clic droit (ou le bouton Options) ouvre le menu du stream : arrêter de regarder, lecteur réduit, atténuation pendant les conversations et force réglable. Les réglages sont personnels et mémorisés par joueur, compte et serveur. Un stream doit transmettre du son pour permettre son réglage ; ton propre partage ne te revient pas en écho.
 
 - Réglages → Notes de mise à jour : toutes les versions depuis les premiers prototypes, consultables sans connexion Internet. Clique sur une version pour déplier ses nouveautés et corrections. Historique également sur https://umbra.lotus-order.fr/patchnotes/ et dans CHANGELOG.md sur GitHub.
+
+- Mon escouade → Prendre ce poste : change de place libre sans quitter la squad, même pour le chef ou l’adjoint. Ton ancien poste est libéré.
+- Infanterie devient Entry Frag, Sniper devient Recon et l’ancien Recon devient Breacher. Les anciens profils et modèles suivent le bon rôle ; les responsabilités ne changent pas.
+- Avant de partager, choisis 480p, 720p, 1080p ou Source. La définition est un maximum qui conserve les proportions ; Source ne limite pas les dimensions. Cible : 30 FPS selon le PC et le réseau. Le choix est repris au partage suivant.
+- Le son du partage est capturé sans traitement micro et encodé en stéréo à 128 kbit/s. Son volume et l’atténuation restent personnels dans le lecteur ; une atténuation active peut faire baisser le niveau pendant les conversations.
+
+- Un son signale qu’un autre joueur de ton salon démarre un partage, même si tu ne regardes pas son écran. Il respecte Réglages → Voix & vidéo → Sons de notification, le volume, la sortie et le casque coupé. Rejoindre un salon où un partage existe déjà ne rejoue pas cette alerte.
+- Admin : glisse le nom d’un joueur connecté sous son vocal vers un autre vocal dans la colonne de gauche. L’accueil est aussi une destination. Si la squad cible est en briefing, le joueur rejoint son briefing. Son escouade et son poste restent inchangés ; cliquer sur son propre vocal le ramène normalement dans sa squad.
+- Textuel : un point blanc indique des messages non lus ordinaires, sans son. Un compteur jaune indique tes mentions ou @everyone ; seul un destinataire reçoit le ping sonore, selon ses réglages. Ouvrir le salon efface son indicateur.

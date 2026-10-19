@@ -29,6 +29,7 @@ contextBridge.exposeInMainWorld('desktop', {
   cancelCapture: () => ipcRenderer.invoke('capture:cancel'),
   voicePresence: () => ipcRenderer.invoke('voice:presence'),
   voiceDisconnect: () => ipcRenderer.invoke('voice:disconnect'),
+  moveVoice: value => ipcRenderer.invoke('voice:move',value),
   visitVoice: squadId => ipcRenderer.invoke('voice:visit',squadId),
   pttStart: keys => ipcRenderer.invoke('voice:ptt-start',keys),
   pttStop: () => ipcRenderer.invoke('voice:ptt-stop'),

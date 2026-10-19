@@ -146,6 +146,7 @@ app.whenReady().then(async () => {
   handle('voice:plan',()=>{if(!remote)throw new Error('Connecte-toi à un serveur partagé pour utiliser le vocal.');return remote.request('voice/plan');});
   handle('voice:disconnect',async()=>{ptt.stop();if(remote?.token)try{await remote.request('voice/disconnect',{});}catch{}return true;});
   handle('voice:presence',()=>remote?remote.request('voice/presence',{}):true);
+  handle('voice:move',value=>{if(!remote)throw new Error('Serveur partagé requis.');return remote.request('voice/move',value);});
   handle('voice:visit',squadId=>{if(!remote)throw new Error('Serveur partagé requis.');return remote.request('voice/visit',{squadId});});
   handle('voice:ptt-start',keys=>{if(!remote?.token)throw new Error('Connexion requise.');ptt.start(keys);return true;});
   handle('voice:ptt-stop',()=>{ptt.stop();return true;});

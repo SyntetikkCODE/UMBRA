@@ -17,9 +17,10 @@ export async function startApi(config) {
  const rtc=new RoomServiceClient(config.livekitUrl,config.apiKey,config.apiSecret);
  const epoch=randomBytes(8).toString('hex'),namespace=config.namespace||'umbra';
  const sessions=new Sessions(config.dataDir);await sessions.open(id=>accounts.db.accounts.some(a=>a.id===id));
- const visits=new Map(),sockets=new Map(),issued=new Map(),activity=new Map(),voiceStates=new Map();
+ const forcedDestinations=new Map(),visits=new Map(),sockets=new Map(),issued=new Map(),activity=new Map(),voiceStates=new Map();
  let stopping=false,revision=0,liveUsers=[],presenceBusy=false;
- const allowed=id=>{const state=accounts.session(id).state,visit=visits.get(id);return voiceChannels(state,id,{visitLobby:visit==='lobby',visitSquadId:state.players.find(p=>p.id===id)?.admin&&state.squads.some(q=>q.id===visit)?visit:null,namespace,epoch});};
+ const allowed=id=>{const state=accounts.session(id).state,visit=visits.get(id);return voiceChannels(state,id,{visitLobby:visit==='lobby',visitSquadId:state.players.find(p=>p.id===id)?.admin&&state.squads.some(q=>q.id===visit)?visit:null,forcedDestinations,namespace,epoch});};
+ const voiceMoved=()=>broadcast({type:'voiceMove'});
  const online=()=>[...sockets].filter(([,set])=>[...set].some(ws=>ws.readyState===1)).map(([id])=>id);
  const snapshot=id=>{const session=accounts.session(id);return {...session,state:{...session.state,settings:{mic:'',squadVolume:85,leadersVolume:100,ducking:true}},revision,onlineIds:online(),voiceUsers:liveUsers,voiceStates:[...voiceStates].map(([userId,value])=>({userId,...value}))};};
  const issue=async(id,remember=false,passwordVersion=accounts.session(id).passwordVersion)=>{if(accounts.session(id).passwordVersion!==passwordVersion)throw new Error('Session expirée. Reconnecte-toi.');const token=await sessions.issue(id,remember,passwordVersion);clearVoice(id);for(const ws of sockets.get(id)||[])ws.close(4001,'session replaced');return {token,...snapshot(id)};};
@@ -58,7 +59,7 @@ export async function startApi(config) {
   const reply=(status,data)=>{res.writeHead(status,{'Content-Type':'application/json; charset=utf-8'});res.end(JSON.stringify(data));};
   try{
    const route=new URL(req.url,'http://localhost').pathname;
-   if(req.method==='GET'&&route==='/health')return reply(200,{name:'UMBRA',version:'0.15.1',needsRegistration:accounts.status().needsRegistration});
+   if(req.method==='GET'&&route==='/health')return reply(200,{name:'UMBRA',version:'0.16.0',needsRegistration:accounts.status().needsRegistration});
    if(req.method==='POST'&&route==='/chat/upload'){
     const id=identify(req),params=new URL(req.url,'http://localhost').searchParams,channelId=params.get('channelId');
     const c=chat.channel(accounts.session(id).state,id,channelId);if(!c.canWrite)throw new Error('Salon en lecture seule.');
@@ -103,19 +104,27 @@ export async function startApi(config) {
     await accounts.action(body,id);const after=memberships();
     // Joining/changing a squad and a leader's new briefing call restore its normal voice destination.
     for(const [playerId,target]of visits)if(target==='lobby'&&(before.get(playerId)!==after.get(playerId)||body.type==='briefingJoin'&&after.get(playerId)===body.squadId))visits.delete(playerId);
+    for(const [playerId,target]of forcedDestinations)if(before.get(playerId)!==after.get(playerId)||!accounts.db.state.squads.some(q=>q.id===target)&&target!=='lobby'||body.type==='briefingJoin'&&after.get(playerId)===body.squadId)forcedDestinations.delete(playerId);
     await reconcile();notify();return reply(200,snapshot(id));
    }
    if(req.method==='POST'&&route==='/replace'){await accounts.replace(body,id);await reconcile();notify();return reply(200,snapshot(id));}
    if(req.method==='POST'&&route==='/tutorial'){await accounts.tutorialDone(id);return reply(200,{ok:true});}
    if(req.method==='POST'&&route==='/logout'){
     const token=req.headers.authorization.slice(7);await sessions.revoke(token);for(const ws of sockets.get(id)||[])ws.close(4001,'logout');
-    for(const c of allowed(id))try{await rtc.removeParticipant(c.room,id);}catch{}return reply(200,{ok:true});
+    for(const c of allowed(id))try{await rtc.removeParticipant(c.room,id);}catch{}if(forcedDestinations.delete(id)){await reconcile();voiceMoved();}return reply(200,{ok:true});
    }
    if(req.method==='GET'&&route==='/admin/invite'){accounts.admin(id);return reply(200,{joinCode:config.joinCode});}
    if(req.method==='POST'&&route==='/voice/presence'){await refreshPresence();return reply(200,{ok:true});}
+   if(req.method==='POST'&&route==='/voice/move'){
+    accounts.admin(id);const target=body.squadId,playerId=body.playerId;if(!accounts.db.state.players.some(p=>p.id===playerId))throw new Error('Joueur introuvable.');
+    if(target!=='lobby'&&!accounts.db.state.squads.some(q=>q.id===target))throw new Error('Salon introuvable.');
+    const source=allowed(playerId).find(c=>c.kind==='primary');let connected=false;try{connected=(await rtc.listParticipants(source.room)).some(p=>p.identity===playerId);}catch{}if(!connected)throw new Error('Ce joueur n’est plus connecté au vocal.');
+    accounts.admin(id);if(target!=='lobby'&&!accounts.db.state.squads.some(q=>q.id===target))throw new Error('Salon introuvable.');
+    forcedDestinations.set(playerId,target);visits.delete(playerId);await reconcile();voiceMoved();notify();return reply(200,{ok:true});
+   }
    if(req.method==='POST'&&route==='/voice/visit'){
     if(body.squadId&&body.squadId!=='lobby'){accounts.admin(id);if(!accounts.db.state.squads.some(q=>q.id===body.squadId))throw new Error('Escouade introuvable.');}
-    if(body.squadId)visits.set(id,body.squadId);else visits.delete(id);await reconcile();return reply(200,{ok:true});
+    if(body.squadId)visits.set(id,body.squadId);else visits.delete(id);const forced=forcedDestinations.delete(id);await reconcile();if(forced)voiceMoved();return reply(200,{ok:true});
    }
    if(req.method==='GET'&&route==='/voice/plan'){
     const channels=allowed(id),p=accounts.db.state.players.find(p=>p.id===id);
@@ -126,7 +135,7 @@ export async function startApi(config) {
     }
     return reply(200,{url:config.publicVoiceUrl,channels,visitSquadId:visits.get(id)||null});
    }
-   if(req.method==='POST'&&route==='/voice/disconnect'){for(const c of allowed(id))try{await rtc.removeParticipant(c.room,id);}catch{}clearVoice(id);activity.delete(id);broadcast({type:'activity',userId:id,speaking:false});return reply(200,{ok:true});}
+   if(req.method==='POST'&&route==='/voice/disconnect'){for(const c of allowed(id))try{await rtc.removeParticipant(c.room,id);}catch{}if(forcedDestinations.delete(id)){await reconcile();voiceMoved();}clearVoice(id);activity.delete(id);broadcast({type:'activity',userId:id,speaking:false});return reply(200,{ok:true});}
    return reply(404,{error:'Route introuvable.'});
   }catch(error){reply(error.message.includes('Session')?401:400,{error:error.message});}
  });

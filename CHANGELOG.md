@@ -4,6 +4,16 @@ Historique reconstitué à partir des archives et des versions conservées. Les 
 
 [Application et téléchargement](https://umbra.lotus-order.fr/) · [Historique sur le site](https://umbra.lotus-order.fr/patchnotes/)
 
+## 0.16.0 — Partages, déplacements vocaux et notifications (2026-10-19)
+
+- Dans Mon escouade, Prendre ce poste permet de rejoindre une place libre sans quitter sa squad. Le poste précédent est libéré ; les responsabilités de chef ou d’adjoint et le vocal sont conservés.
+- Les rôles sont renommés : Infanterie devient Entry Frag, Sniper devient Recon et l’ancien Recon devient Breacher, avec une nouvelle icône. Les affectations et spécialités existantes restent associées au bon rôle.
+- Le diffuseur choisit 480p, 720p, 1080p ou Source avant de lancer son partage. Le choix est mémorisé sur le PC ; Source conserve la définition native et chaque profil cible 30 FPS selon les ressources disponibles.
+- Le son du partage utilise un profil stéréo à 128 kbit/s, sans traitement de microphone ni coupure d’encodage dans les silences, à la place du profil voix à 24 kbit/s. Les volumes et l’atténuation personnels restent réglables.
+- Une notification sonore annonce le démarrage du partage d’un autre joueur dans le salon vocal actuel, même sans regarder son stream. Les réglages de sons, la sortie et le casque coupé sont respectés.
+- Les admins peuvent glisser un joueur connecté depuis la liste sous son vocal vers une autre escouade ou l’accueil. Le déplacement vocal conserve son escouade et son poste ; une escouade en briefing conduit à ce briefing.
+- Un message textuel ordinaire non lu affiche un petit point blanc, sans son. Une mention personnelle ou @everyone affiche un compteur jaune et joue un son pour ses destinataires, selon leurs réglages de notifications.
+
 ## 0.15.5 — Tout l’historique des mises à jour (2026-10-18)
 
 - Nouvelle rubrique Notes de mise à jour dans les réglages, accessible à tous les membres et lisible hors connexion.

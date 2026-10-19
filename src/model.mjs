@@ -65,6 +65,12 @@ export function reduce(state, action) {
       requireSquad(); if (membership(s)) fail('Quitte d’abord ton escouade actuelle.');
       const slot = q.slots.find(t=>t.id===action.slotId); if (!slot || slot.playerId) fail('Cette place n’est plus disponible.'); slot.playerId=me; break;
     }
+    case 'moveSlot': {
+      requireSquad();if(membership(s)?.id!==q.id)fail('Tu dois appartenir à cette escouade pour changer de poste.');
+      const source=q.slots.find(t=>t.playerId===me),target=q.slots.find(t=>t.id===action.slotId);
+      if(!target||target.playerId)fail('Cette place n’est plus disponible.');
+      source.playerId=null;target.playerId=me;break;
+    }
     case 'leave': {
       requireSquad(); if(q.leaderId===me) fail('Transfère le commandement avant de quitter, ou dissous l’escouade.');
       q.slots.forEach(t=>{if(t.playerId===me)t.playerId=null;}); if(q.deputyId===me) q.deputyId=null; break;

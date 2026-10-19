@@ -19,3 +19,5 @@ The original game screenshot is excluded. Wardogs and BULKHEAD names are referen
 
 The UMBRA logo and notification tones were created for the application. Verify any future replacement asset’s provenance before committing it.
 
+
+The share-start.wav notification added in 0.16.0 is an original, synthesized two-note UMBRA tone, covered by the project MIT license. No external recording is used.

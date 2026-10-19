@@ -27,7 +27,7 @@ try{
  await page.locator('[data-nav=players]').click();assert.equal(await page.locator('.data-table tbody tr').count(),1);assert.equal(await page.locator('[data-action=addPlayer]').count(),0);
  await page.locator('[data-nav=operations]').click();await page.locator('[data-action=create]').click();
  assert.equal(await page.locator('[name=roles]').count(),0);assert.equal(await page.locator('.slot-editor').count(),1);
- assert.deepEqual(await page.locator('[data-role-select]').first().locator('option').allTextContents(),['Infanterie','Medic','Pilote','Builders','Recon','Sniper','Driver','Launcher','Libre','Autre']);
+ assert.deepEqual(await page.locator('[data-role-select]').first().locator('option').allTextContents(),['Entry Frag','Medic','Pilote','Builders','Breacher','Recon','Driver','Launcher','Libre','Autre']);
  assert.equal(await page.locator('.slot-editor').first().locator('[data-remove-slot]').count(),0);
  await page.locator('[data-squad-icon=target]').click();await page.locator('[data-squad-color="#6486ae"]').click();await page.locator('[name=name]').fill('ALPHA');await page.locator('[data-role-select]').first().selectOption('Medic');
  await page.locator('#add-slot').click();await page.locator('[data-role-select]').nth(1).selectOption('Recon');
@@ -69,7 +69,7 @@ try{
  await page.locator('[data-nav=operations]').click();assert.equal(await page.locator('.operation-group').count(),2);
  const firstGroup=page.locator(`[data-operation-group="${operationId}"]`),secondGroup=page.locator(`[data-operation-group="${secondId}"]`);
  assert.equal(await firstGroup.locator('[data-squad="'+alphaId+'"]').count(),1);assert.equal(await secondGroup.locator('.squad-card').count(),0);assert.equal(await secondGroup.locator('[data-action=joinOperation]').isDisabled(),true);
- assert.equal(await firstGroup.locator('.squad-member-row').filter({hasText:'Alice'}).locator('.member-role').textContent(),'Medic');assert.equal(await firstGroup.locator('.squad-member-row').filter({hasText:'Bob'}).locator('.member-role').textContent(),'Recon');
+ assert.equal(await firstGroup.locator('.squad-member-row').filter({hasText:'Alice'}).locator('.member-role').textContent(),'Medic');assert.equal(await firstGroup.locator('.squad-member-row').filter({hasText:'Bob'}).locator('.member-role').textContent(),'Breacher');
  await firstGroup.locator('[data-action=briefing]').click();assert.equal(await secondGroup.locator('[data-action=joinOperation]').isDisabled(),true);
  await firstGroup.locator('[data-action=leaveOperation]').click();assert.equal(await firstGroup.locator('.squad-card').count(),0);assert.equal(await page.locator('.free-squads [data-squad="'+alphaId+'"]').count(),1);assert.equal(await secondGroup.locator('[data-action=joinOperation]').isEnabled(),true);
  assert.deepEqual(await page.locator('#squad-results').evaluate(el=>[...el.children].map(c=>c.className)),['operation-group','operation-group','free-squads']);

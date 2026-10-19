@@ -1,4 +1,4 @@
-import {PREDEFINED_ROLES} from './roles.mjs';
+import {PREDEFINED_ROLES,roleLabel} from './roles.mjs';
 import {roleIcons} from '../assets/role-icons.mjs';
 export const PROFILE_ROLES=PREDEFINED_ROLES;
 export const DEFAULT_PROFILE_GRADIENT=Object.freeze({start:'#34322b',end:'#171717',angle:135});
@@ -9,5 +9,5 @@ export function validateProfileAppearance(p){
  if(p.primaryRole!==undefined&&!PROFILE_ROLES.includes(p.primaryRole)||p.secondaryRole!==undefined&&p.secondaryRole!==''&&!PROFILE_ROLES.includes(p.secondaryRole))throw new Error('Spécialité de profil invalide.');
  if(p.secondaryRole&&p.secondaryRole===(p.primaryRole||'Libre'))throw new Error('Choisis deux spécialités différentes.');
 }
-export function primaryRoleIcon(p){const role=profileAppearance(p||{}).primaryRole;return `<span class="primary-role-icon" data-profile-role="${role}" title="Spécialité principale : ${role}" aria-label="Spécialité principale : ${role}">${roleIcons[role]}</span>`;}
+export function primaryRoleIcon(p){const role=profileAppearance(p||{}).primaryRole;return `<span class="primary-role-icon" data-profile-role="${role}" title="Spécialité principale : ${roleLabel(role)}" aria-label="Spécialité principale : ${roleLabel(role)}">${roleIcons[role]}</span>`;}
 export function profileBackground(p){const a=profileAppearance(p),g=a.gradient;return `background:linear-gradient(${g.angle}deg,${g.start},${g.end})`;}

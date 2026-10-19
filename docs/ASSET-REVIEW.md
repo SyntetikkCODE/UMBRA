@@ -10,3 +10,5 @@ Keep this issue explicit in the SignPath application. Before asserting full open
 
 Inter, Lucide, the UMBRA-owned logo/tones, vendored JS and corresponding native sources are listed separately in THIRD_PARTY.md. An eventual blanket MIT claim must not override third-party licenses or unresolved artwork rights.
 
+
+In 0.16.0, display names change while the stored keys remain stable. Breacher (stored Recon) now uses an UMBRA-created door/ram outline. Recon (stored Sniper) retains the Lucide crosshair. The other reference redraws and their unresolved third-party rights remain unchanged.

@@ -6,7 +6,7 @@ Projet communautaire indépendant. Aucune affiliation ou validation par l’édi
 
 ## État de cette copie
 
-La version 0.15.5 ajoute les notes de mise à jour sur le site, GitHub et dans les réglages hors connexion. La 0.15.4 ajoute un volume indépendant du partage d’écran, un menu au clic droit et une atténuation réglable du stream pendant les conversations. Elle conserve le plein écran, le lecteur réduit et le partage ciblant 30 FPS. Le sélecteur sépare les applications et les écrans entiers dans le sélecteur de partage. Elle conserve la connexion par clic sur les vocaux, l’accueil ouvert à tous et les ajouts 0.15.0 : diagnostic vocal, caméra et partage d’écran à la demande, modèles d’escouades et raccourcis personnalisés. La candidature SignPath Foundation a été refusée faute de visibilité publique suffisante. **Aucune signature Authenticode SignPath n’est acquise.** Les builds de CI non signés sont destinés à la revue ; le téléchargement officiel reste sur le site.
+La version 0.16.0 ajoute le changement de poste dans sa squad, les noms Entry Frag / Recon / Breacher, quatre qualités de partage et un son stéréo à 128 kbit/s. La 0.15.5 ajoute les notes de mise à jour sur le site, GitHub et dans les réglages hors connexion. La 0.15.4 ajoute un volume indépendant du partage d’écran, un menu au clic droit et une atténuation réglable du stream pendant les conversations. Elle conserve le plein écran, le lecteur réduit et le partage ciblant 30 FPS. Le sélecteur sépare les applications et les écrans entiers dans le sélecteur de partage. Elle conserve la connexion par clic sur les vocaux, l’accueil ouvert à tous et les ajouts 0.15.0 : diagnostic vocal, caméra et partage d’écran à la demande, modèles d’escouades et raccourcis personnalisés. La candidature SignPath Foundation a été refusée faute de visibilité publique suffisante. **Aucune signature Authenticode SignPath n’est acquise.** Les builds de CI non signés sont destinés à la revue ; le téléchargement officiel reste sur le site.
 
 L’origine et le statut des icônes de rôle sont décrits dans [ASSET-REVIEW.md](docs/ASSET-REVIEW.md). Ce point doit être clarifié avant de présenter l’ensemble des ressources comme couvertes par une licence open source.
 
@@ -55,7 +55,7 @@ Le test médias utilise une caméra et un micro générés, capture une fenêtre
 npm run dist:unsigned
 ```
 
-Résultat : `dist/UMBRA-Setup-0.15.4-win64.exe`. Les licences sont générées dans le projet, sans dépendre du dossier personnel d’un développeur. Le paquet contient les sources correspondantes LGPL du hook et les notices des dépendances.
+Résultat : `dist/UMBRA-Setup-0.16.0-win64.exe`. Les licences sont générées dans le projet, sans dépendre du dossier personnel d’un développeur. Le paquet contient les sources correspondantes LGPL du hook et les notices des dépendances.
 
 ## Signature et mises à jour
 
@@ -77,3 +77,7 @@ Le code propre à UMBRA est proposé sous [MIT](LICENSE), avec les exceptions et
 ## Recette média isolée
 
 `npm run test:media` démarre deux clients et une API de validation séparée. Fournir le moteur LiveKit Windows via `UMBRA_LIVEKIT_EXE` (ou runtime/livekit-server.exe). La caméra est synthétique ; le partage capture une fenêtre de mire créée par le test. Aucun compte réel n’est utilisé. Les vraies webcams, le partage du son Windows et la charge à 40 joueurs doivent aussi être vérifiés avec la team.
+
+Les clés de rôles enregistrées restent stables : `Infanterie` s’affiche Entry Frag, `Sniper` s’affiche Recon et `Recon` s’affiche Breacher. Cette présentation préserve les anciennes affectations, profils et modèles sans migration ambiguë entre les deux Recon. Les postes personnalisés conservent leur nom.
+
+La 0.16.0 ajoute aussi le signal de début de partage dans le vocal actuel, le déplacement vocal administrateur par glisser-déposer et des notifications textuelles séparées : point blanc silencieux pour un message ordinaire, compteur jaune et son pour les mentions reçues.

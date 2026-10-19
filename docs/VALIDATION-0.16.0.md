@@ -1,0 +1,20 @@
+# Validation UMBRA 0.16.0
+
+Vérifications le 19 octobre 2026, avec comptes isolés et moteurs locaux distincts de la production :
+
+- 112 tests unitaires/API réussis. Deux demandes concurrentes pour la même place libre produisent une réussite et un refus, sans perdre de membre. Le changement de poste conserve chef, adjoint et identité de salon vocal.
+- Les noms Entry Frag, Recon et Breacher sont affichés avec des clés de stockage inchangées. Les anciennes affectations, spécialités et modèles ne nécessitent aucune migration ambiguë. Les noms personnalisés sont conservés.
+- Parcours Electron de base réussi sur la source. Parcours textuels, vocaux à quatre clients et médias à deux clients réussis sur la source puis l’exécutable Windows empaqueté.
+- Glisser-déposer réel d’un membre ordinaire par un admin : déplacement vers une autre escouade puis l’accueil, son effectivement reçu dans le salon cible, appartenance et poste inchangés, retour volontaire dans son propre vocal. Le serveur refuse la demande d’un non-admin et une destination inexistante. Un invité vocal temporaire rejoint le même salon que ses destinataires, y compris leur briefing ; son retrait rétablit l’audience d’origine.
+- Message ordinaire non lu : point blanc et aucune création du son de mention. Mention d’un autre joueur : aucun ping pour le témoin. Mention personnelle : compteur jaune et un seul son. Les tests unitaires couvrent aussi @everyone, les propres messages, les événements dupliqués et la remise à zéro à l’ouverture du salon. Contrôle visuel du point blanc et du compteur jaune simultanément.
+- Début de partage distant : un événement sonore unique, WAV effectivement chargé/décodé dans le client destinataire, même en regardant sa caméra. Une caméra n’émet pas ce signal ; rejoindre un salon avec un partage déjà actif ne rejoue pas le signal. Le lecteur de notifications existant applique le volume, la sortie audio, la désactivation des sons et le casque coupé.
+- Captures natives successives : 480p à 854 × 470, 720p à 1280 × 706, 1080p à 1920 × 1060 et Source à 2284 × 1260 pour la fenêtre de test. Les proportions sont conservées, les plafonds respectés et Source dépasse réellement 1080p. Choix mémorisé entre les partages.
+- Capture animée reçue à 29,7 FPS sur la source et environ 30 FPS sur l’exécutable empaqueté. Cette mesure locale ne garantit pas la même cadence sur chaque PC ou réseau.
+- Audio de partage publié avec un plafond de 128 kbit/s et stéréo activée ; fréquences distinctes effectivement reçues à gauche et à droite (environ 656 et 984 Hz pour des signaux de 660 et 990 Hz). Réduction du bruit, écho et gain automatique de microphone désactivés pour cette capture. Le micro conserve son profil voix.
+- Régressions vérifiées : volume et sourdine du stream, amplification individuelle, atténuation déclenchée par la voix, plein écran natif, lecteur réduit, raccourcis clavier/souris en arrière-plan, partages simultanés et arrêt des médias au déplacement/débranchement.
+- 87 fichiers de code et ressources embarqués comparés à la source finale, manuel externe vérifié, taille et empreinte du binaire contrôlées contre le manifeste signé avec la clé Ed25519 UMBRA existante. L’installeur reste sans signature Authenticode reconnue.
+- 24 fiches de version générées depuis la source commune pour l’app, le site et GitHub ; contrôle de cohérence et contrôle de l’arbre public réussis. La nouvelle API lit la base existante sur le VPS sans la modifier.
+
+Le test média capture une vraie fenêtre Windows mais ajoute une piste stéréo synthétique : il ne capture pas le son réel du bureau. La qualité du son Windows selon les applications et périphériques, les conditions réseau et la charge avec toute la team doivent encore être essayées par les joueurs. Le nouveau profil corrige le débit voix inadapté aux partages, sans garantir à lui seul la disparition de toutes les variations signalées.
+
+L’activation de l’API 0.16.0 nécessite un redémarrage de ce service, avec sauvegarde et retour possible au code précédent. LiveKit et le site Lotus restent des services distincts.

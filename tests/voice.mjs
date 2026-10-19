@@ -6,6 +6,7 @@ import {spawn} from 'node:child_process';
 import {randomBytes} from 'node:crypto';
 import {RoomServiceClient} from 'livekit-server-sdk';
 import {startApi} from '../server/api.mjs';
+import {testAdminMove} from './admin-move-ui.mjs';
 import {mouseButton} from './windows-mouse.mjs';
 
 const root=path.resolve(import.meta.dirname,'..'),artifacts=path.join(root,'artifacts');await fs.mkdir(artifacts,{recursive:true});
@@ -69,6 +70,7 @@ try{
  await until(()=>a.page.evaluate(()=>window.__soundEvents.some(e=>e.kind==='peer-join')),'Son arrivée du membre');
  assert.equal(await c.page.evaluate(()=>window.__soundEvents.some(e=>e.kind==='move')),false);
  console.log('PASS sons : confirmation de connexion et arrivée d’un membre dans la squad.');
+ await testAdminMove({a,b,c,d,qA,qC,until,action,hold,hears,release});
  // Member clicks on a locked squad only inspect it; direct access preserves the current page.
  await b.page.locator('#channel-rail .rail-squad[data-id="'+qC.id+'"]').click();await b.page.locator('.squad-detail .detail-title h2').filter({hasText:'BRAVO'}).waitFor();assert.equal(await b.page.locator('.sidebar [data-voice-label]').textContent(),'ALPHA');
  await b.page.locator('#channel-rail .rail-squad[data-id="'+qA.id+'"]').click();await until(()=>b.page.locator('.sidebar [data-voice-status]').textContent().then(t=>t==='Voix connectée'),'Same vocal remains connected');assert.equal(await b.page.locator('.squad-detail .detail-title h2').textContent(),'BRAVO');await b.page.locator('[data-nav=command]').click();
