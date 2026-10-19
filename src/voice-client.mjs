@@ -25,11 +25,11 @@ export class VoiceClient {
  get cameraEnabled(){return !!this.primaryRoom?.localParticipant.isCameraEnabled;}
  get screenEnabled(){return !!this.primaryRoom?.localParticipant.isScreenShareEnabled;}
  get quality(){return this.primaryRoom?.localParticipant.connectionQuality||'unknown';}
- get shortcutKeys(){return nativeBindings(this.keys,this.bindings);}
+ get shortcutKeys(){return nativeBindings(this.keys,this.bindings,this.keyLabels);}
  mediaParticipants(){const room=this.primaryRoom;if(!room)return [];return [room.localParticipant,...room.remoteParticipants.values()].map(p=>({id:p.identity,name:p.name||p.identity,local:p===room.localParticipant,screen:!!p.getTrackPublication(Track.Source.ScreenShare)&&!p.getTrackPublication(Track.Source.ScreenShare).isMuted,camera:!!p.getTrackPublication(Track.Source.Camera)&&!p.getTrackPublication(Track.Source.Camera).isMuted})).filter(p=>p.screen||p.camera);}
  watchMedia(id,source){this.watching.clear();if(id)this.watching.add(id+':'+source);this.updateSubscriptions();this.notify();}
  updateSubscriptions(){const room=this.primaryRoom;if(!room)return;for(const p of room.remoteParticipants.values())for(const publication of p.trackPublications.values()){const source=publication.source,subscribe=source===Track.Source.Microphone||this.watching.has(p.identity+':'+source)||source===Track.Source.ScreenShareAudio&&this.watching.has(p.identity+':'+Track.Source.ScreenShare);if(publication.isSubscribed!==subscribe)publication.setSubscribed(subscribe);}}
- async configureBindings(bindings){const next=validateBindings(this.keys,bindings);if(this.enabled&&!this.capturingKey)await this.bridge.pttStart(nativeBindings(this.keys,next));localStorage.setItem('umbra-custom-shortcuts',JSON.stringify(next));this.bindings=next;this.nativeHeld={};await this.applyTransmit();this.reportStatus();this.notify();}
+ async configureBindings(bindings){const next=validateBindings(this.keys,bindings),native=nativeBindings(this.keys,next,this.keyLabels);if(this.enabled&&!this.capturingKey)await this.bridge.pttStart(native);localStorage.setItem('umbra-custom-shortcuts',JSON.stringify(next));this.bindings=next;this.nativeHeld={};await this.applyTransmit();this.reportStatus();this.notify();}
  get label(){return this.rooms.get('primary')?.channel.label||'Vocal déconnecté';}
  setVolumeScope(scope){const players=this.participantVolumes.load(scope),streams=this.streamAudioPreferences.load(scope);if(players||streams)this.applyVolumes();}
  participantVolume(id){return this.participantVolumes.get(id);}
@@ -136,8 +136,8 @@ export class VoiceClient {
  setDeafen(value){this.deafened=value;this.applyTransmit();this.applyAudioSettings();this.reportStatus();this.notify();}
    keyLabel(kind){return this.keyLabels[kind]||prettyKey(this.keys[kind]);}
    async configure({mode=this.mode,keys=this.keys,labels=this.keyLabels}={}){
-    if(!['ptt','vad'].includes(mode))throw new Error('Mode vocal invalide.');validateBindings(keys,this.bindings);
-    if(this.enabled&&!this.capturingKey)await this.bridge.pttStart(nativeBindings(keys,this.bindings));
+    if(!['ptt','vad'].includes(mode))throw new Error('Mode vocal invalide.');const native=nativeBindings(keys,this.bindings,labels);
+    if(this.enabled&&!this.capturingKey)await this.bridge.pttStart(native);
     this.mode=mode;this.keys={...keys};this.keyLabels=Object.fromEntries(['primary','leaders','broadcast'].filter(k=>typeof labels[k]==='string'&&labels[k].length<=24).map(k=>[k,labels[k]]));
     localStorage.setItem('umbra-voice',JSON.stringify({mode,keys:this.keys,labels:this.keyLabels}));await this.applyTransmit();this.notify();
    }

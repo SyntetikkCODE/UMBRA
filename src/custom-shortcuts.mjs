@@ -15,4 +15,11 @@ export function validateBindings(keys,bindings=[]){
  }
  return bindings.map(({id,action,key,label})=>({id,action,key,label}));
 }
-export const nativeBindings=(keys,bindings)=>({...keys,...Object.fromEntries(validateBindings(keys,bindings).map(b=>[b.id,b.key]))});
+// French AZERTY ² is DOM Backquote, but Windows reports VK_OEM_7, which
+// libuiohook translates to Quote. Use the saved label so old bindings work too.
+const nativeKey=(key,label)=>key==='Backquote'&&label==='²'?'Quote':key;
+export function nativeBindings(keys,bindings,labels={}){
+ const result={...Object.fromEntries(Object.entries(keys).map(([kind,key])=>[kind,nativeKey(key,labels[kind])])),...Object.fromEntries(validateBindings(keys,bindings).map(b=>[b.id,nativeKey(b.key,b.label)]))};
+ if(new Set(Object.values(result)).size!==Object.keys(result).length)throw new Error('Cette touche est déjà utilisée par un autre raccourci.');
+ return result;
+}

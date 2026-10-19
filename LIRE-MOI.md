@@ -1,4 +1,4 @@
-# UMBRA 0.16.0 — Wardogs Companion
+# UMBRA 0.16.1 — Wardogs Companion
 
 Téléchargement officiel : https://umbra.lotus-order.fr/
 
@@ -31,3 +31,5 @@ Notices tierces et sources LGPL : LICENCES. Politique de confidentialité dans l
 - Un son signale qu’un autre joueur de ton salon démarre un partage, même si tu ne regardes pas son écran. Il respecte Réglages → Voix & vidéo → Sons de notification, le volume, la sortie et le casque coupé. Rejoindre un salon où un partage existe déjà ne rejoue pas cette alerte.
 - Admin : glisse le nom d’un joueur connecté sous son vocal vers un autre vocal dans la colonne de gauche. L’accueil est aussi une destination. Si la squad cible est en briefing, le joueur rejoint son briefing. Son escouade et son poste restent inchangés ; cliquer sur son propre vocal le ramène normalement dans sa squad.
 - Textuel : un point blanc indique des messages non lus ordinaires, sans son. Un compteur jaune indique tes mentions ou @everyone ; seul un destinataire reçoit le ping sonore, selon ses réglages. Ouvrir le salon efface son indicateur.
+
+- Raccourcis ² : la touche française est reconnue par Windows pour parler ou lancer une action personnalisée, même si UMBRA est en arrière-plan. Les raccourcis déjà enregistrés avec le libellé ² sont repris automatiquement ; une touche en conflit doit être libérée avant de réaffecter le même raccourci.

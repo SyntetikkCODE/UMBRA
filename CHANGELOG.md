@@ -4,6 +4,12 @@ Historique reconstitué à partir des archives et des versions conservées. Les 
 
 [Application et téléchargement](https://umbra.lotus-order.fr/) · [Historique sur le site](https://umbra.lotus-order.fr/patchnotes/)
 
+## 0.16.1 — Raccourci ² sur clavier français (2026-10-19)
+
+- Correction de la touche ² des claviers AZERTY français : son code Windows est maintenant correctement reconnu pour le push-to-talk et les actions personnalisées, y compris en arrière-plan.
+- Les raccourcis ² déjà enregistrés sont pris en charge grâce au libellé mémorisé, sans devoir les recréer. Les appuis répétés ne déclenchent pas plusieurs bascules et le relâchement arrête la transmission.
+- Les conflits entre touches aboutissant au même raccourci Windows sont refusés avant l’enregistrement. Aucun redémarrage du serveur vocal n’est nécessaire pour cette mise à jour.
+
 ## 0.16.0 — Partages, déplacements vocaux et notifications (2026-10-19)
 
 - Dans Mon escouade, Prendre ce poste permet de rejoindre une place libre sans quitter sa squad. Le poste précédent est libéré ; les responsabilités de chef ou d’adjoint et le vocal sont conservés.

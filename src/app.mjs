@@ -33,7 +33,7 @@ let shared=false,serverAddress='',networkOnline=false,voiceUsers=[],onlineIds=[]
 export const voice=new VoiceClient(window.desktop,()=>updateVoiceUI());
 const templates=new SquadTemplates();
 let cameraDevices=[],cameraPreview=null,lastMicLevelDb=null,cameraPreviewGeneration=0,cameraPreviewStarting=false;
-let appVersion='0.16.0', updateState={phase:'portable',startup:false};
+let appVersion='0.16.1', updateState={phase:'portable',startup:false};
 let settingsTab='voice';
 let channelExperiment=localStorage.getItem('umbra-channel-experiment')!=='off',roomMode='voice',gatePreview=null,railWasVisible=false;
 const channelsView=new ChannelsView(window.desktop,()=>refreshChannelsUI(),error=>toast(friendlyError(error),true),message=>chatPing(message),()=>page==='operations'&&roomMode==='text');

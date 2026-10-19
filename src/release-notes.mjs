@@ -2,6 +2,11 @@
 // Early prototypes are grouped because their individual release logs were not retained.
 export const HISTORY_NOTE='Historique reconstitué à partir des archives et des versions conservées. Les prototypes 0.1 à 0.3.1 sont regroupés ; les versions suivantes sont détaillées séparément. Les notes décrivent les changements de chaque époque, pas uniquement le fonctionnement actuel.';
 export const RELEASE_NOTES=[
+ {version:'0.16.1',title:'Raccourci ² sur clavier français',date:'2026-10-19',changes:[
+  'Correction de la touche ² des claviers AZERTY français : son code Windows est maintenant correctement reconnu pour le push-to-talk et les actions personnalisées, y compris en arrière-plan.',
+  'Les raccourcis ² déjà enregistrés sont pris en charge grâce au libellé mémorisé, sans devoir les recréer. Les appuis répétés ne déclenchent pas plusieurs bascules et le relâchement arrête la transmission.',
+  'Les conflits entre touches aboutissant au même raccourci Windows sont refusés avant l’enregistrement. Aucun redémarrage du serveur vocal n’est nécessaire pour cette mise à jour.'
+ ]},
  {version:'0.16.0',title:'Partages, déplacements vocaux et notifications',date:'2026-10-19',changes:[
   'Dans Mon escouade, Prendre ce poste permet de rejoindre une place libre sans quitter sa squad. Le poste précédent est libéré ; les responsabilités de chef ou d’adjoint et le vocal sont conservés.',
   'Les rôles sont renommés : Infanterie devient Entry Frag, Sniper devient Recon et l’ancien Recon devient Breacher, avec une nouvelle icône. Les affectations et spécialités existantes restent associées au bon rôle.',

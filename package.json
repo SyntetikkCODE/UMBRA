@@ -1,7 +1,7 @@
 {
   "name": "umbra-war-room",
   "productName": "UMBRA",
-  "version": "0.16.0",
+  "version": "0.16.1",
   "description": "Communications et escouades pour les équipes Wardogs",
   "author": "UMBRA contributors",
   "private": true,
@@ -33,7 +33,8 @@
     "build:notes": "node scripts/build-notes.mjs",
     "check:notes": "node scripts/build-notes.mjs --check",
     "test:notes": "node tests/release-notes-ui.mjs",
-    "prepackage": "npm run build:notes"
+    "prepackage": "npm run build:notes",
+    "test:squared": "node tests/squared-shortcut-ui.mjs"
   },
   "devDependencies": {
     "@actions/artifact": "4.0.0",
