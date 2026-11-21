@@ -14,7 +14,7 @@ L’origine et le statut des icônes de rôle sont décrits dans [ASSET-REVIEW.m
 
 ## Notes de mise à jour
 
-[Historique complet depuis les premiers prototypes](CHANGELOG.md) · [Version sur le site](https://umbra.lotus-order.fr/patchnotes/). Dans l’application : **Réglages → Notes de mise à jour**, même hors connexion.
+[Historique complet depuis les premiers prototypes](CHANGELOG.md) · [Version sur le site](https://hexagone.lotus-order.fr/patchnotes/). Dans l’application : **Réglages → Notes de mise à jour**, même hors connexion.
 
 Les notes se maintiennent dans `src/release-notes.mjs`. `npm run build:notes` régénère le CHANGELOG GitHub et la page statique `site/patchnotes/` ; `npm run check:notes` vérifie leur cohérence. Chaque nouvelle version doit posséder son entrée avant la construction.
 
@@ -57,7 +57,7 @@ Le test médias utilise une caméra et un micro générés, capture une fenêtre
 npm run dist:unsigned
 ```
 
-Résultat : `dist/HEXAGONE-Setup-0.18.0-win64.exe`. Les licences sont générées dans le projet, sans dépendre du dossier personnel d’un développeur. Le paquet contient les sources correspondantes LGPL du hook et les notices des dépendances.
+Résultat : `dist/HEXAGONE-Setup-0.18.1-win64.exe`. Les licences sont générées dans le projet, sans dépendre du dossier personnel d’un développeur. Le paquet contient les sources correspondantes LGPL du hook et les notices des dépendances.
 
 ## Signature et mises à jour
 

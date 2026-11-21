@@ -1,7 +1,7 @@
 {
   "name": "hexagone",
   "productName": "HEXAGONE",
-  "version": "0.18.0",
+  "version": "0.18.1",
   "description": "Communications et escouades pour les équipes Wardogs",
   "author": "HEXAGONE contributors",
   "private": true,
@@ -38,7 +38,8 @@
     "build:audio": "node scripts/build-audio.cjs",
     "prestart": "npm run build:audio",
     "test:navigation": "node tests/navigation-ui.mjs",
-    "test:branding": "node tests/branding-ui.mjs"
+    "test:branding": "node tests/branding-ui.mjs",
+    "test:voice-connection": "node tests/voice-connection-ui.mjs"
   },
   "devDependencies": {
     "@actions/artifact": "4.0.0",
@@ -58,7 +59,7 @@
     "ws": "^8.22.0"
   },
   "license": "MIT",
-  "homepage": "https://umbra.lotus-order.fr/",
+  "homepage": "https://hexagone.lotus-order.fr/",
   "repository": {
     "type": "git",
     "url": "https://github.com/SyntetikkCODE/UMBRA.git"

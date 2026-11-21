@@ -1,6 +1,6 @@
-# HEXAGONE 0.18.0 — Wardogs Companion
+# HEXAGONE 0.18.1 — Wardogs Companion
 
-Téléchargement officiel : https://umbra.lotus-order.fr/
+Téléchargement officiel : https://hexagone.lotus-order.fr/
 
 - Liste des vocaux : clique sur ta squad pour te connecter directement. Les admins peuvent visiter toutes les squads ; l’accueil est ouvert à toute l’équipe. Sans accès à une squad, le clic ouvre sa fiche.
 - Réglages → Voix & vidéo : diagnostic en direct, périphériques, tests micro et caméra.
@@ -21,7 +21,7 @@ Notices tierces et sources LGPL : LICENCES. Politique de confidentialité dans l
 
 - Son du partage : curseur indépendant de 0 à 200 % et sourdine sous la vidéo. Un clic droit (ou le bouton Options) ouvre le menu du stream : arrêter de regarder, lecteur réduit, atténuation pendant les conversations et force réglable. Les réglages sont personnels et mémorisés par joueur, compte et serveur. Un stream doit transmettre du son pour permettre son réglage ; ton propre partage ne te revient pas en écho.
 
-- Réglages → Notes de mise à jour : toutes les versions depuis les premiers prototypes, consultables sans connexion Internet. Clique sur une version pour déplier ses nouveautés et corrections. Historique également sur https://umbra.lotus-order.fr/patchnotes/ et dans CHANGELOG.md sur GitHub.
+- Réglages → Notes de mise à jour : toutes les versions depuis les premiers prototypes, consultables sans connexion Internet. Clique sur une version pour déplier ses nouveautés et corrections. Historique également sur https://hexagone.lotus-order.fr/patchnotes/ et dans CHANGELOG.md sur GitHub.
 
 - Mon escouade → Prendre ce poste : change de place libre sans quitter la squad, même pour le chef ou l’adjoint. Ton ancien poste est libéré.
 - Infanterie devient Entry Frag, Sniper devient Recon et l’ancien Recon devient Breacher. Les anciens profils et modèles suivent le bon rôle ; les responsabilités ne changent pas.

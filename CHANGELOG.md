@@ -2,7 +2,15 @@
 
 Historique reconstitué à partir des archives et des versions conservées. Les prototypes 0.1 à 0.3.1 sont regroupés ; les versions suivantes sont détaillées séparément. Les notes décrivent les changements de chaque époque, pas uniquement le fonctionnement actuel.
 
-[Application et téléchargement](https://umbra.lotus-order.fr/) · [Historique sur le site](https://umbra.lotus-order.fr/patchnotes/)
+[Application et téléchargement](https://hexagone.lotus-order.fr/) · [Historique sur le site](https://hexagone.lotus-order.fr/patchnotes/)
+
+## 0.18.1 — Connexion vocale et périphériques audio (2026-11-21)
+
+- Si un microphone ou une sortie mémorisée n’est plus reconnu après une mise à jour ou un changement de matériel, l’application retrouve automatiquement le périphérique Windows par défaut et enregistre ce choix. Les volumes et traitements audio sont conservés.
+- Les erreurs de microphone sans texte sont remplacées par une explication lisible : autorisation refusée, microphone absent, occupé ou réglages incompatibles. Le message de connexion reste visible dans la barre vocale, même après la disparition de la notification.
+- L’état Connexion apparaît dès le clic, y compris pendant la demande d’accès au salon. Plusieurs clics pendant cette demande ne lancent plus plusieurs connexions à la suite.
+- Le test du microphone dans Voix & vidéo récupère également les anciens identifiants de périphériques devenus invalides.
+- Le site officiel et le téléchargement passent sur hexagone.lotus-order.fr. L’ancienne adresse redirige vers le nouveau site et continue de distribuer les mises à jour aux installations existantes.
 
 ## 0.18.0 — UMBRA devient HEXAGONE (2026-11-21)
 

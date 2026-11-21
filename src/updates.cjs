@@ -3,7 +3,7 @@ const path=require('node:path');
 const {NsisUpdater}=require('electron-updater');
 const {SignedUpdateProvider}=require('./signed-update-provider.cjs');
 const {verifyInstaller}=require('./update-verification.cjs');
-function updateFeed(value='https://umbra.lotus-order.fr/umbra-updates/'){
+function updateFeed(value='https://hexagone.lotus-order.fr/umbra-updates/'){
  const url=new URL(value);
  if(url.username||url.password||url.search||url.hash||!(url.protocol==='https:'||url.protocol==='http:'&&['127.0.0.1','localhost','[::1]'].includes(url.hostname)))throw new Error('Adresse de mise à jour invalide.');
  return url.href.endsWith('/')?url.href:url.href+'/';

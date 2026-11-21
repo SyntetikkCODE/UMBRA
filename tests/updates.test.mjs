@@ -22,6 +22,6 @@ test('Downloaded and cached installers are checked again before installation',as
  try{await fs.writeFile(file,bytes);const expected={size:bytes.length,sha512:createHash('sha512').update(bytes).digest('base64')};await verifyInstaller(file,expected);await fs.writeFile(file,Buffer.from('modified test payload'));await assert.rejects(()=>verifyInstaller(file,expected));}finally{await fs.rm(dir,{recursive:true,force:true});}
 });
 test('Internet update feed needs HTTPS; isolated localhost tests remain possible',()=>{
- assert.equal(updateFeed(),'https://umbra.lotus-order.fr/umbra-updates/');assert.equal(updateFeed('http://127.0.0.1:8080'),'http://127.0.0.1:8080/');
+ assert.equal(updateFeed(),'https://hexagone.lotus-order.fr/umbra-updates/');assert.equal(updateFeed('http://127.0.0.1:8080'),'http://127.0.0.1:8080/');
  for(const url of ['http://evil.test/','https://user:password@evil.test/','file:///a','https://a/?token=secret'])assert.throws(()=>updateFeed(url));
 });

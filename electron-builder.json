@@ -39,7 +39,7 @@
   "publish": [
     {
       "provider": "generic",
-      "url": "https://umbra.lotus-order.fr/umbra-updates/"
+      "url": "https://hexagone.lotus-order.fr/umbra-updates/"
     }
   ],
   "win": {

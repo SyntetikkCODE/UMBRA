@@ -1,6 +1,7 @@
 import {voiceIndicator} from './voice-state.mjs';
 import {VoiceClient} from './voice-client.mjs';
 import {audioDeviceOptions,microphoneGraph,captureOptions} from './audio.mjs';
+import {captureMicrophone} from './audio-devices.mjs';
 import { rmsLevel, createVoiceGate, thresholdAmplitude, meterPercent, updateMicMeter } from './activity.mjs';
 import { PREDEFINED_ROLES, CUSTOM_ROLE, roleChoice, roleLabel } from './roles.mjs';
 import {ScrollPositions} from './scroll-position.mjs';
@@ -37,7 +38,7 @@ const scrollPositions=new ScrollPositions();
 let textRailCollapsed=localStorage.getItem('umbra-text-rail-collapsed')==='yes';
 const viewScrollKey=()=>[serverAddress,state.currentUserId,page,page==='operations'?roomMode==='text'?'text:'+channelsView.selected:'voice':page==='detail'?selected:page==='settings'?settingsTab:''].join('|');
 let cameraDevices=[],cameraPreview=null,lastMicLevelDb=null,cameraPreviewGeneration=0,cameraPreviewStarting=false;
-let appVersion='0.18.0', updateState={phase:'portable',startup:false};
+let appVersion='0.18.1', updateState={phase:'portable',startup:false};
 let settingsTab='voice';
 let channelExperiment=localStorage.getItem('umbra-channel-experiment')!=='off',roomMode='voice',gatePreview=null,railWasVisible=false;
 const channelsView=new ChannelsView(window.desktop,()=>refreshChannelsUI(),error=>toast(friendlyError(error),true),message=>chatPing(message),()=>page==='operations'&&roomMode==='text');
@@ -51,7 +52,7 @@ const player=id=>state.players.find(p=>p.id===id);
 const squad=id=>state.squads.find(q=>q.id===id);
 const button=(label,action,extra='',cls='')=>`<button type="button" class="btn ${cls}" data-action="${action}" ${extra}>${label}</button>`;
 function toast(message,error=false){ const el=$('#toast');el.textContent=message;el.className='show'+(error?' error':'');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.className='',4500); }
-const friendlyError = error => error.message.replace(/^Error invoking remote method '[^']+': (Error: )?/, '');
+const friendlyError = error => error?.message?.replace(/^Error invoking remote method '[^']+': (Error: )?/, '').trim()||'Une erreur est survenue. Réessaie.';
 async function persist(next){ return window.desktop.replace(next); }
 let settingsQueue=Promise.resolve();
 function dispatch(action,message){if(action.type!=='settings')return applyAction(action,message);const task=settingsQueue.catch(()=>{}).then(()=>applyAction(action,message));settingsQueue=task;return task;}
@@ -248,7 +249,8 @@ async function toggleMic(mode='test'){
  if($('#mic-status'))$('#mic-status').textContent='Ouverture du microphone…';
  const accountId=state?.currentUserId;
  try{
-  const mic=state.settings.mic;stream=await navigator.mediaDevices.getUserMedia({audio:{deviceId:mic?{exact:mic}:undefined,...captureOptions(state.settings)},video:false});
+  const recovered=await captureMicrophone(state.settings);stream=recovered.stream;
+  if(Object.keys(recovered.changes).length)await voice.onDeviceRecovery(recovered.changes);
   if(!state||state.currentUserId!==accountId||mode==='test'&&page!=='settings'){stopMic();return;}
   micMode=mode;
   await refreshAudioDevices();
@@ -412,13 +414,21 @@ function voiceVisitors(q){
  const guests=voiceUsers.filter(v=>!members.has(v.id)&&v.channels.some(c=>c.kind==='primary'&&c.squadId===q.id)).map(v=>player(v.id)).filter(Boolean);
  return guests.map(p=>`<tr class="voice-guest-row"><td><div class="member" data-player="${escape(p.id)}">${speaking(p.id)}<button class="name-link" data-action="viewProfile" data-player="${escape(p.id)}">${displayName(p)}</button></div></td><td><span class="subtext">Admin · en vocal</span></td><td><span class="subtext">Hors effectif</span></td></tr>`).join('');
 }
-let voiceRouteQueue=Promise.resolve();
+voice.onDeviceRecovery=async values=>{
+ const recovered=await window.desktop.action({type:'settings',values});
+ state={...state,settings:recovered.settings};syncSettingsControls();
+ toast('Périphérique audio mémorisé indisponible : utilisation du périphérique Windows par défaut.');
+};
+let voiceRouteTask=null;
 function connectVoiceTarget(target){
- const task=voiceRouteQueue.catch(()=>{}).then(async()=>{
+ if(voiceRouteTask)return voiceRouteTask;
+ voice.error='';voice.connecting=true;updateVoiceUI();
+ const task=Promise.resolve().then(async()=>{
   if(!shared)throw new Error('Connecte-toi au serveur de la team pour rejoindre un vocal.');
   await window.desktop.visitVoice(target);stopMic();
   if(voice.enabled)await voice.sync(state.settings);else await voice.connect(state.settings);
- });voiceRouteQueue=task;return task;
+ }).catch(error=>{if(!voice.error)voice.error=friendlyError(error);throw new Error(voice.error);}).finally(()=>{voiceRouteTask=null;voice.connecting=false;updateVoiceUI();});
+ voiceRouteTask=task;return task;
 }
 async function connectHome(){await connectVoiceTarget(null);}
 

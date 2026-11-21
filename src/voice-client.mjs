@@ -8,11 +8,12 @@ import {validateBindings,nativeBindings} from './custom-shortcuts.mjs';
 import {StreamAudioPreferences,streamGain} from './stream-audio.mjs';
 import {applicationAudio} from './application-audio.mjs';
 import {screenQuality,screenShareOptions} from './screen-quality.mjs';
+import {captureMicrophone,voiceError} from './audio-devices.mjs';
 export class VoiceClient {
  constructor(bridge,changed=()=>{}) {
   this.bridge=bridge;this.changed=changed;this.enabled=false;this.connecting=false;this.rooms=new Map();this.stream=null;this.audioContext=null;this.frame=null;this.queue=Promise.resolve();this.txQueue=Promise.resolve();this.transmitting=null;this.speaking=false;this.error='';this.muted=false;this.deafened=false;
   this.networkDown=false;this.keys={primary:'F8',leaders:'F9',broadcast:'F10'};this.mode='vad';this.nativeHeld={};this.pointerHeld={};this.settings=audioSettings();this.hooksStarted=false;
-  this.voiceDetected=false;this.graph=null;this.sounds=new VoiceSounds();this.lastDestination=null;this.presenceInitialized=false;this.presencePeers=new Set();
+  this.voiceDetected=false;this.graph=null;this.sounds=new VoiceSounds();this.lastDestination=null;this.presenceInitialized=false;this.presencePeers=new Set();this.onDeviceRecovery=async()=>{};
   this.participantVolumes=new ParticipantVolumes();
   this.streamAudioPreferences=new StreamAudioPreferences();this.streamDucking=false;
   this.screenQuality='720p';try{const saved=localStorage.getItem('umbra-screen-quality');if(saved)this.screenQuality=screenQuality(saved).id;}catch{}
@@ -40,7 +41,7 @@ export class VoiceClient {
  streamHasAudio(id){return !!this.primaryRoom?.remoteParticipants.get(id)?.getTrackPublication(Track.Source.ScreenShareAudio);}
  notify(){this.changed();}
  reportStatus(){this.bridge.voiceStatus?.({connected:this.enabled&&this.rooms.get('primary')?.room.state==='connected',muted:this.effectiveMuted,deafened:this.deafened});}
- async connect(settings){this.enabled=true;this.error='';try{await this.sync(settings);}catch(e){this.error=e.message;await this.disconnect();throw e;}}
+ async connect(settings){this.enabled=true;this.error='';try{await this.sync(settings);}catch(e){this.error=voiceError(e);await this.disconnect();throw e;}}
  sync(settings=this.settings){this.settings=audioSettings(settings);this.applyAudioSettings();const task=this.queue.catch(()=>{}).then(()=>this.reconcile());this.queue=task;return task;}
  async reconcile(attempt=0){
   if(!this.enabled)return;
@@ -52,7 +53,8 @@ export class VoiceClient {
     const capture=captureOptions(this.settings);
     if(this.stream&&JSON.stringify(capture)!==JSON.stringify(this.captureOptions)){await this.stream.getAudioTracks()[0].applyConstraints(capture);this.captureOptions=capture;}
     if(!this.stream){
-     this.stream=await navigator.mediaDevices.getUserMedia({audio:{deviceId:this.settings.mic?{exact:this.settings.mic}:undefined,...capture},video:false});this.device=this.settings.mic;this.captureOptions=capture;
+     const recovered=await captureMicrophone(this.settings);this.stream=recovered.stream;this.settings=recovered.settings;this.device=this.settings.mic;this.captureOptions=capture;
+     if(Object.keys(recovered.changes).length)await this.onDeviceRecovery(recovered.changes);
     if(!this.enabled){this.stream.getTracks().forEach(t=>t.stop());this.stream=null;return;}
     this.graph=await microphoneGraph(this.stream,this.settings.inputVolume);this.audioContext=this.graph.context;const analyser=this.graph.detector;
     const samples=new Float32Array(analyser.fftSize),gate=createVoiceGate();let lastReport=0,lastSpeaking=false,lastChannel='';
@@ -112,7 +114,7 @@ export class VoiceClient {
      this.error='Reconnexion au vocal…';this.notify();await new Promise(resolve=>setTimeout(resolve,400*(attempt+1)));
      if(this.enabled)return await this.reconcile(attempt+1);return;
     }
-    this.error=e.message;this.enabled=false;throw e;
+    this.error=voiceError(e);this.enabled=false;throw e;
    }
   finally{this.connecting=false;this.reportStatus();this.notify();}
  }
