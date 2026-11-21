@@ -1,0 +1,30 @@
+:root{--accent:#88aaff;--accent-fill:#3d63ce;--accent-soft:#9eb9ff;--gold:var(--accent);--red:#ee7b84;--notes-gold:var(--accent)}
+.brand-mark{width:46px;height:46px;object-fit:contain;flex:none;filter:none}
+.brand-name{color:#f0f2f8;letter-spacing:1.5px;font-size:23px}
+.brand-sub{color:#8e96a8;letter-spacing:1.6px}
+.sidebar .brand{padding-left:0;padding-right:0;gap:8px}
+.sidebar .brand-name{font-size:17px;letter-spacing:1px}
+.sidebar .brand-mark{width:38px;height:38px}
+.sidebar .brand-sub{font-size:6px;letter-spacing:1px}
+.channel-layout .brand-mark{width:40px;height:40px}
+.channel-layout .brand-name{font-size:19px;letter-spacing:1.25px}
+.channel-layout .brand{gap:10px;padding-top:0;padding-bottom:12px}
+.auth-intro .brand-mark,.update-layout .brand-mark{width:72px;height:72px}
+.auth-intro .brand-name,.update-layout .brand-name{font-size:27px;letter-spacing:2px}
+.auth-line{background:linear-gradient(90deg,#416bdc 0 48%,#d8deec 48% 65%,#d54450 65%);height:3px;width:70px}
+.btn.gold,.radio-transmitting{background:var(--accent-fill)!important;border-color:var(--accent-fill)!important;color:#fff!important}
+.btn.gold:hover:not(:disabled){background:#4c74df!important;border-color:#4c74df!important}
+.btn.gold:focus-visible{outline:2px solid #adc6ff;outline-offset:3px}
+.nav-item.active,.primary-nav .nav-item.active{color:#e4ecff}
+.sidebar-account .profile .primary-role-icon{color:#9eb9ff}
+.chat-mention{background:#35232c;color:#ffb7c1}
+.chat-message.is-mentioned{background:#251a23;border-left-color:#da6573}
+.chat-mention-count{background:#d65d6c;color:#fff}
+.error-text,.audio-toggle input:focus-visible+.switch-track{color:var(--red)}
+.switch-track{border-color:#444b5c}
+.audio-toggle input:checked+.switch-track{background:var(--accent-fill);border-color:var(--accent-fill)}
+.audio-toggle input:checked+.switch-track:after{background:#fff}
+.speech-ring.is-speaking{border-color:var(--accent);background:transparent}
+.top-info .build-label{color:#b8c8ed;border-color:#394760}
+.appearance-choice.selected{border-color:var(--accent)}
+::selection{background:#344d87;color:#fff}

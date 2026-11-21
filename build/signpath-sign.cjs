@@ -7,9 +7,9 @@ function createSigner({upload,submit,verify,env=process.env,root=path.resolve(__
    if(env.GITHUB_ACTIONS!=='true'||env.RUNNER_ENVIRONMENT!=='github-hosted'||env.GITHUB_REPOSITORY!=='SyntetikkCODE/UMBRA'||env.GITHUB_REF!=='refs/heads/main'||env.GITHUB_EVENT_NAME!=='workflow_dispatch')throw new Error('Signing requires a manual build of main on a GitHub-hosted runner.');
    for(const key of ['SIGNPATH_API_TOKEN','SIGNPATH_ORGANIZATION_ID','SIGNPATH_PUBLISHER','GITHUB_TOKEN','RUNNER_TEMP','SIGNPATH_ACTION_PATH'])if(!env[key])throw new Error('Missing signing setting: '+key);
    const {version}=JSON.parse(await fs.readFile(path.join(root,'package.json'))),name=path.basename(configuration.path);
-   if(!['UMBRA.exe',`UMBRA-Setup-${version}-win64.exe`,`UMBRA-Setup-${version}-win64.__uninstaller.exe`].includes(name))throw new Error('Refusing to sign a third-party or unexpected executable.');
+   if(!['UMBRA.exe',`UMBRA-Setup-${version}-win64.exe`,`UMBRA-Setup-${version}-win64.__uninstaller.exe`,'HEXAGONE.exe',`HEXAGONE-Setup-${version}-win64.exe`,`HEXAGONE-Setup-${version}-win64.__uninstaller.exe`].includes(name))throw new Error('Refusing to sign a third-party or unexpected executable.');
    if(configuration.hash!=='sha256')throw new Error('Only SHA-256 signing is permitted.');
-   const productVersion=name==='UMBRA.exe'?version+'.0':version;
+   const productVersion=['UMBRA.exe','HEXAGONE.exe'].includes(name)?version+'.0':version;
    const staging=await fs.mkdtemp(path.join(path.resolve(env.RUNNER_TEMP),'umbra-signpath-')),unsigned=path.join(staging,'umbra-signable.exe'),signed=path.join(staging,'signed','umbra-signable.exe');
    await fs.copyFile(configuration.path,unsigned);
    try{

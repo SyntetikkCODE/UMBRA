@@ -8,7 +8,7 @@ export const SQUAD_COLORS = [
 ];
 export const squadAppearance = q => ({
   icon:SQUAD_ICONS.some(([id])=>id===q?.icon)?q.icon:'squad',
-  color:SQUAD_COLORS.some(([color])=>color===q?.color)?q.color:'#777777'
+  color:q?.color==='#e6c34b'?'#6486ae':SQUAD_COLORS.some(([color])=>color===q?.color)?q.color:'#777777'
 });
 export function validateAppearance(q){
   if(q.icon!==undefined&&!SQUAD_ICONS.some(([id])=>id===q.icon))throw new Error('Icône d’escouade invalide.');

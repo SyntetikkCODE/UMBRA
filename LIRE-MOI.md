@@ -1,4 +1,4 @@
-# UMBRA 0.17.0 — Wardogs Companion
+# HEXAGONE 0.18.0 — Wardogs Companion
 
 Téléchargement officiel : https://umbra.lotus-order.fr/
 
@@ -32,7 +32,7 @@ Notices tierces et sources LGPL : LICENCES. Politique de confidentialité dans l
 - Admin : glisse le nom d’un joueur connecté sous son vocal vers un autre vocal dans la colonne de gauche. L’accueil est aussi une destination. Si la squad cible est en briefing, le joueur rejoint son briefing. Son escouade et son poste restent inchangés ; cliquer sur son propre vocal le ramène normalement dans sa squad.
 - Textuel : un point blanc indique des messages non lus ordinaires, sans son. Un compteur jaune indique tes mentions ou @everyone ; seul un destinataire reçoit le ping sonore, selon ses réglages. Ouvrir le salon efface son indicateur.
 
-- Raccourcis ² : la touche française est reconnue par Windows pour parler ou lancer une action personnalisée, même si UMBRA est en arrière-plan. Les raccourcis déjà enregistrés avec le libellé ² sont repris automatiquement ; une touche en conflit doit être libérée avant de réaffecter le même raccourci.
+- Raccourcis ² : la touche française est reconnue par Windows pour parler ou lancer une action personnalisée, même si HEXAGONE est en arrière-plan. Les raccourcis déjà enregistrés avec le libellé ² sont repris automatiquement ; une touche en conflit doit être libérée avant de réaffecter le même raccourci.
 
 - Partage d’une application : coche « Partager le son de l’application » pour transmettre uniquement ce programme. Plusieurs fenêtres du même programme peuvent partager leur son. Cette fonction nécessite une version compatible de Windows (Windows 11) ; sinon le partage reste possible sans son.
 - Écran entier : la case « Partager tous les sons du PC » transmet l’audio global. Changer d’onglet remet cette case à zéro pour confirmer explicitement le nouveau choix.

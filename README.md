@@ -1,12 +1,12 @@
-# UMBRA — Wardogs Companion
+# HEXAGONE — Wardogs Companion
 
-Application Windows pour organiser les escouades et les communications de la team P.H.A.N.T.O.M : squads, opérations, briefing, vocal squad/leaders, salons textuels et profils.
+Application Windows pour organiser les escouades et les communications de la team HEXAGONE : squads, opérations, briefing, vocal squad/leaders, salons textuels et profils.
 
 Projet communautaire indépendant. Aucune affiliation ou validation par l’éditeur du jeu n’est revendiquée.
 
 ## État de cette copie
 
-La version 0.17.0 conserve les positions de lecture, compacte la barre des salons et ajoute le choix de l’oreille pour chaque réseau vocal. Tous les joueurs peuvent émettre dans Annonce générale ; les droits du réseau leaders restent distincts. La barre des tâches Windows indique les messages non lus en blanc et les mentions en rouge. L’API et le client portent la même version.
+La version 0.18.0 marque le passage d’UMBRA à HEXAGONE : nouveau nom, logo de la structure, accents bleus et rouges. Les fonctions, comptes, sessions, réglages et données existants sont conservés. Les identifiants techniques de stockage, d’installation et de mise à jour sont maintenus pour assurer cette continuité.
 
 Le partage de fenêtre transmet le son du programme sélectionné sous Windows compatible ; plusieurs fenêtres du même programme peuvent partager leur audio. Les correctifs de déplacement et de reconnexion vocale de la version 0.16.2 sont conservés. La candidature SignPath Foundation a été refusée faute de visibilité publique suffisante. **Aucune signature Authenticode SignPath n’est acquise.** Le téléchargement officiel reste sur le site.
 
@@ -57,7 +57,7 @@ Le test médias utilise une caméra et un micro générés, capture une fenêtre
 npm run dist:unsigned
 ```
 
-Résultat : `dist/UMBRA-Setup-0.16.2-win64.exe`. Les licences sont générées dans le projet, sans dépendre du dossier personnel d’un développeur. Le paquet contient les sources correspondantes LGPL du hook et les notices des dépendances.
+Résultat : `dist/HEXAGONE-Setup-0.18.0-win64.exe`. Les licences sont générées dans le projet, sans dépendre du dossier personnel d’un développeur. Le paquet contient les sources correspondantes LGPL du hook et les notices des dépendances.
 
 ## Signature et mises à jour
 
@@ -71,7 +71,7 @@ Le serveur Node et le moteur LiveKit sont des services distincts. `server/run.mj
 
 ## Licence et contributions
 
-Le code propre à UMBRA est proposé sous [MIT](LICENSE), avec les exceptions et licences tierces décrites dans [THIRD_PARTY.md](THIRD_PARTY.md). Les marques tierces ne sont pas concédées. Ouvrir une proposition de modification avant les changements importants ; les demandes de signature de production nécessitent une approbation humaine.
+Le code propre à HEXAGONE est proposé sous [MIT](LICENSE), avec les exceptions et licences tierces décrites dans [THIRD_PARTY.md](THIRD_PARTY.md). Les marques tierces ne sont pas concédées. Ouvrir une proposition de modification avant les changements importants ; les demandes de signature de production nécessitent une approbation humaine.
 
 [Confidentialité](PRIVACY.md) · [Sécurité](SECURITY.md) · [Dossier de candidature](docs/SIGNPATH-APPLICATION.md)
 

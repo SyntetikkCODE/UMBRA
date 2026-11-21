@@ -1,9 +1,9 @@
 {
-  "name": "umbra-war-room",
-  "productName": "UMBRA",
-  "version": "0.17.0",
+  "name": "hexagone",
+  "productName": "HEXAGONE",
+  "version": "0.18.0",
   "description": "Communications et escouades pour les équipes Wardogs",
-  "author": "UMBRA contributors",
+  "author": "HEXAGONE contributors",
   "private": true,
   "type": "module",
   "main": "main.cjs",
@@ -11,7 +11,7 @@
     "start": "electron .",
     "test": "node --test tests/*.test.mjs",
     "test:ui": "node tests/ui.mjs",
-    "package": "npm run build:audio && electron-packager . UMBRA --platform=win32 --arch=x64 --out=../package --icon=assets/umbra.ico --prune=true --ignore=^/tests --ignore=^/artifacts --overwrite --ignore=^/assets/wardogs-reference.png --asar.unpack=**/*.node --ignore=^/runtime --extra-resource=native/bin/UMBRA.AudioCapture.exe",
+    "package": "npm run build:audio && electron-packager . HEXAGONE --platform=win32 --arch=x64 --out=../package --icon=assets/hexagone.ico --prune=true --ignore=^/tests --ignore=^/artifacts --overwrite --ignore=^/assets/wardogs-reference.png --asar.unpack=**/*.node --ignore=^/runtime --extra-resource=native/bin/UMBRA.AudioCapture.exe",
     "test:voice": "node tests/voice.mjs",
     "build:voice": "esbuild node_modules/livekit-client/dist/livekit-client.esm.mjs --bundle --format=esm --platform=browser --minify --outfile=assets/livekit.mjs",
     "test:devices": "node tests/devices.mjs",
@@ -37,7 +37,8 @@
     "test:squared": "node tests/squared-shortcut-ui.mjs",
     "build:audio": "node scripts/build-audio.cjs",
     "prestart": "npm run build:audio",
-    "test:navigation": "node tests/navigation-ui.mjs"
+    "test:navigation": "node tests/navigation-ui.mjs",
+    "test:branding": "node tests/branding-ui.mjs"
   },
   "devDependencies": {
     "@actions/artifact": "4.0.0",

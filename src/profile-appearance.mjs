@@ -1,7 +1,7 @@
 import {PREDEFINED_ROLES,roleLabel} from './roles.mjs';
 import {roleIcons} from '../assets/role-icons.mjs';
 export const PROFILE_ROLES=PREDEFINED_ROLES;
-export const DEFAULT_PROFILE_GRADIENT=Object.freeze({start:'#34322b',end:'#171717',angle:135});
+export const DEFAULT_PROFILE_GRADIENT=Object.freeze({start:'#293347',end:'#171717',angle:135});
 export function profileAppearance(p){return {banner:p.banner||'',gradient:{...DEFAULT_PROFILE_GRADIENT,...p.profileGradient},primaryRole:p.primaryRole||'Libre',secondaryRole:p.secondaryRole||''};}
 export function validateProfileAppearance(p){
  if(p.banner!==undefined&&(typeof p.banner!=='string'||p.banner.length>600000||p.banner&&!/^data:image\/png;base64,[A-Za-z0-9+/]+={0,2}$/.test(p.banner)))throw new Error('Bannière invalide.');

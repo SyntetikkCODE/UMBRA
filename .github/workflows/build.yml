@@ -33,7 +33,7 @@ jobs:
         with:
           name: umbra-unsigned-review-only
           path: |
-            dist/UMBRA-Setup-*-win64.exe
+            dist/HEXAGONE-Setup-*-win64.exe
             dist/latest.yml
           retention-days: 7
           if-no-files-found: error

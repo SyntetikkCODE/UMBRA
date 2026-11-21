@@ -1,6 +1,6 @@
 {
   "appId": "fr.lotus-order.umbra",
-  "productName": "UMBRA",
+  "productName": "HEXAGONE",
   "directories": {
     "output": "dist",
     "buildResources": "assets"
@@ -51,8 +51,8 @@
         ]
       }
     ],
-    "icon": "assets/umbra.ico",
-    "artifactName": "UMBRA-Setup-${version}-win64.exe"
+    "icon": "assets/hexagone.ico",
+    "artifactName": "HEXAGONE-Setup-${version}-win64.exe"
   },
   "nsis": {
     "oneClick": false,
@@ -62,7 +62,7 @@
     "deleteAppDataOnUninstall": false,
     "createDesktopShortcut": true,
     "createStartMenuShortcut": true,
-    "shortcutName": "UMBRA",
+    "shortcutName": "HEXAGONE",
     "include": "build/installer.nsh",
     "installerLanguages": [
       "fr_FR"

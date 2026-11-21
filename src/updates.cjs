@@ -35,7 +35,7 @@ function createUpdates({app,changed=()=>{},beforeInstall=async()=>{},feed=proces
     if(!installed){finish();return state;}
     if(download)set({phase:'checking',startup,message:''});
     const result=await updater.checkForUpdates();
-    if(!result?.isUpdateAvailable){set({phase:'current',version:'',message:'UMBRA est à jour.'});if(download)finish();return state;}
+    if(!result?.isUpdateAvailable){set({phase:'current',version:'',message:'HEXAGONE est à jour.'});if(download)finish();return state;}
     expected=result.updateInfo.files[0];
     if(!download){set({phase:'available',startup:false,version:result.updateInfo.version,percent:0,message:''});return state;}
     set({phase:'downloading',version:result.updateInfo.version,percent:0});

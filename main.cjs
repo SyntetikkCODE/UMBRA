@@ -1,9 +1,9 @@
-const { app, BrowserWindow, ipcMain, protocol, net, session, dialog, nativeImage, shell, safeStorage, clipboard, desktopCapturer } = require('electron');
+const { app, BrowserWindow, ipcMain, protocol, net, session, dialog, nativeImage, shell, safeStorage, clipboard, desktopCapturer, screen } = require('electron');
 const path = require('node:path');
 const fs = require('node:fs/promises');
 const { pathToFileURL } = require('node:url');
 protocol.registerSchemesAsPrivileged([{ scheme: 'umbra', privileges: { standard: true, secure: true, supportFetchAPI: true, corsEnabled: true } }]);
-app.setName('UMBRA');
+app.setName('HEXAGONE');
 if(process.platform==='win32')app.setAppUserModelId('fr.lotus-order.umbra');
 app.setPath('userData',path.join(app.getPath('appData'),'UMBRA'));
 if (process.env.UMBRA_DATA_DIR) app.setPath('userData', path.resolve(process.env.UMBRA_DATA_DIR));
@@ -26,13 +26,14 @@ app.on('second-instance', () => { if (win) { if (win.isMinimized()) win.restore(
 const trusted = e => e.sender === win?.webContents && e.senderFrame?.url.startsWith('umbra://app/');
 const guard = e => { if (!trusted(e)) throw new Error('Origine refusée'); };
 function createWindow() {
-  win = new BrowserWindow({ width: 1540, height: 990, minWidth: 1120, minHeight: 740, frame: false, backgroundColor: '#101010', show: false, title: 'UMBRA — Wardogs Companion', icon: path.join(__dirname, 'assets/umbra.ico'), webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true, backgroundThrottling: false } });
+  const placement=require('./src/test-window.cjs').testWindowPlacement(screen);
+  win = new BrowserWindow({ width: 1540, height: 990, minWidth: 1120, minHeight: 740, ...(placement||{}), frame: false, backgroundColor: '#101010', show: false, title: 'HEXAGONE — Wardogs Companion', icon: path.join(__dirname, 'assets/hexagone.ico'), webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true, backgroundThrottling: false } });
   win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   win.webContents.on('will-navigate', (e, url) => { if (!url.startsWith('umbra://app/')) e.preventDefault(); });
   win.webContents.on('render-process-gone',()=>applicationAudio.stop());
   win.webContents.on('did-start-navigation',(_event,_url,inPlace,mainFrame)=>{if(mainFrame&&!inPlace)applicationAudio.stop();});
   win.on('closed',()=>applicationAudio.stop());
-  win.once('ready-to-show', () => win.show());
+  win.once('ready-to-show', () => placement?win.showInactive():win.show());
   win.loadURL('umbra://app/index.html');
 }
 app.whenReady().then(async () => {

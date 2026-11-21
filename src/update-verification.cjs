@@ -3,7 +3,7 @@ const {createReadStream}=require('node:fs');
 const {once}=require('node:events');
 function verifyManifest(bytes,signature,publicKey){
  if(bytes.length>65536||typeof signature!=='string'||!/^[A-Za-z0-9+/]{86}==$/.test(signature.trim()))throw new Error('Signature de mise à jour invalide.');
- if(!verify(null,bytes,publicKey,Buffer.from(signature.trim(),'base64')))throw new Error('La signature de cette mise à jour ne correspond pas à UMBRA.');
+ if(!verify(null,bytes,publicKey,Buffer.from(signature.trim(),'base64')))throw new Error('La signature de cette mise à jour ne correspond pas à HEXAGONE.');
 }
 function validateManifest(info){
  if(!info||!/^\d+\.\d+\.\d+$/.test(info.version)||!Array.isArray(info.files)||info.files.length!==1||info.packages)throw new Error('Manifest de mise à jour invalide.');

@@ -1,5 +1,11 @@
 # Asset review before SignPath application
 
+## HEXAGONE identity (0.18.0)
+
+The maintainer supplied the HEXAGONE logo for the new identity. Its original PNG is retained in `assets/hexagone-source.png`; the app PNG and Windows icon are resized from that file, without redrawing or recoloring. This is project branding, not artwork attributed to Wardogs. No third-party license is inferred for the supplied logo.
+
+## Earlier role artwork
+
 The original Wardogs screenshot is not included in this repository or in the application package.
 
 `assets/role-icons.mjs` contains five manually drawn SVGs based on the class shapes in a screenshot supplied by the maintainer: Infanterie, Medic, Pilote, Builders and Driver. Launcher is an UMBRA-created rocket-launcher silhouette. Recon, Sniper and Libre use Lucide geometry under the included license.

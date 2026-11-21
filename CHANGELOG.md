@@ -1,8 +1,15 @@
-# Notes de mise à jour UMBRA
+# Notes de mise à jour HEXAGONE
 
 Historique reconstitué à partir des archives et des versions conservées. Les prototypes 0.1 à 0.3.1 sont regroupés ; les versions suivantes sont détaillées séparément. Les notes décrivent les changements de chaque époque, pas uniquement le fonctionnement actuel.
 
 [Application et téléchargement](https://umbra.lotus-order.fr/) · [Historique sur le site](https://umbra.lotus-order.fr/patchnotes/)
+
+## 0.18.0 — UMBRA devient HEXAGONE (2026-11-21)
+
+- Nouveau nom HEXAGONE, nouveau logo fourni par la structure et nouvelles icônes Windows, dans l’application et sur le téléchargement.
+- Les accents jaunes laissent place à une identité bleue et rouge sur une base gris/noir : boutons, navigation, activité vocale, mentions et réglages.
+- La mise à jour reprend l’installation existante : comptes, connexion mémorisée, messages, périphériques, raccourcis et préférences restent conservés.
+- Le nom de la structure devient HEXAGONE dans les écrans de connexion, la navigation et les indications de l’application. L’historique des versions UMBRA reste consultable.
 
 ## 0.17.0 — Salons plus lisibles et écoute par oreille (2026-10-20)
 
