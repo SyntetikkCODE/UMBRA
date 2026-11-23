@@ -1,0 +1,6 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs/promises';import path from 'node:path';import {startApi} from '../server/api.mjs';
+test('A readable team invitation code registers a player and remains visible to admins only',async()=>{
+ const dir=await fs.mkdtemp(path.resolve('artifacts/invitation-')),api=await startApi({dataDir:dir,port:0,apiKey:'test',apiSecret:'0'.repeat(64),livekitUrl:'http://127.0.0.1:65530',publicVoiceUrl:'ws://127.0.0.1:65530',joinCode:'HEXAGONE'});
+ try{const register=(name,joinCode)=>fetch('http://127.0.0.1:'+api.port+'/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,password:'test-password',joinCode})});assert.equal((await register('Wrong','incorrect')).status,403);const response=await register('InvitationAdmin','HEXAGONE');assert.equal(response.status,200);const admin=await response.json(),invite=await fetch('http://127.0.0.1:'+api.port+'/admin/invite',{headers:{Authorization:'Bearer '+admin.token}});assert.equal((await invite.json()).joinCode,'HEXAGONE');const member=await(await register('InvitationMember','HEXAGONE')).json();assert.equal((await fetch('http://127.0.0.1:'+api.port+'/admin/invite',{headers:{Authorization:'Bearer '+member.token}})).status,400);}
+ finally{await api.close();}
+});

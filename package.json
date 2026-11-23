@@ -1,7 +1,7 @@
 {
   "name": "hexagone",
   "productName": "HEXAGONE",
-  "version": "0.19.0",
+  "version": "0.20.0",
   "description": "Communications et escouades pour les équipes Wardogs",
   "author": "HEXAGONE contributors",
   "private": true,
@@ -40,7 +40,8 @@
     "test:navigation": "node tests/navigation-ui.mjs",
     "test:branding": "node tests/branding-ui.mjs",
     "test:voice-connection": "node tests/voice-connection-ui.mjs",
-    "test:overlay": "node tests/overlay-ui.mjs"
+    "test:overlay": "node tests/overlay-ui.mjs",
+    "test:operations-voice": "node tests/operation-voice-ui.mjs"
   },
   "devDependencies": {
     "@actions/artifact": "4.0.0",

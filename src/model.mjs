@@ -34,7 +34,8 @@ export function validateState(s) {
       if (!str(slot.id,80) || slotIds.has(slot.id) || !str(slot.role,32)) fail('Poste invalide.'); slotIds.add(slot.id);
       if (slot.playerId !== null) { if (!ids.has(slot.playerId) || assigned.has(slot.playerId)) fail('Un joueur ne peut occuper qu’une place.'); assigned.add(slot.playerId); }
     }
-    if (!ids.has(q.leaderId) || !q.slots.some(t => t.playerId === q.leaderId)) fail('Le chef doit appartenir à l’escouade.');
+    if(q.leaderId===null){if(q.slots.some(t=>t.playerId)||q.deputyId!==null)fail('Une escouade occupée doit avoir un chef.');}
+    else if (!ids.has(q.leaderId) || !q.slots.some(t => t.playerId === q.leaderId)) fail('Le chef doit appartenir à l’escouade.');
     if (q.deputyId !== null && (q.deputyId === q.leaderId || !q.slots.some(t => t.playerId === q.deputyId))) fail('Adjoint invalide.');
   }
   const t = s.settings;
@@ -63,7 +64,7 @@ export function reduce(state, action) {
   switch(action.type) {
     case 'join': {
       requireSquad(); if (membership(s)) fail('Quitte d’abord ton escouade actuelle.');
-      const slot = q.slots.find(t=>t.id===action.slotId); if (!slot || slot.playerId) fail('Cette place n’est plus disponible.'); slot.playerId=me; break;
+      const slot = q.slots.find(t=>t.id===action.slotId); if (!slot || slot.playerId) fail('Cette place n’est plus disponible.'); slot.playerId=me;if(q.leaderId===null)q.leaderId=me;break;
     }
     case 'moveSlot': {
       requireSquad();if(membership(s)?.id!==q.id)fail('Tu dois appartenir à cette escouade pour changer de poste.');
@@ -72,13 +73,13 @@ export function reduce(state, action) {
       source.playerId=null;target.playerId=me;break;
     }
     case 'leave': {
-      requireSquad(); if(q.leaderId===me) fail('Transfère le commandement avant de quitter, ou dissous l’escouade.');
+      requireSquad(); if(q.leaderId===me){if(q.slots.some(t=>t.playerId&&t.playerId!==me))fail('Transfère le commandement avant de quitter, ou dissous l’escouade.');q.leaderId=null;}
       q.slots.forEach(t=>{if(t.playerId===me)t.playerId=null;}); if(q.deputyId===me) q.deputyId=null; break;
     }
     case 'create': {
-      if(membership(s)) fail('Quitte d’abord ton escouade actuelle.');
+      const join=action.join!==false;if(!join&&!s.players.find(p=>p.id===me)?.admin)fail('Préparation réservée aux admins.');if(join&&membership(s)) fail('Quitte d’abord ton escouade actuelle.');
       validateAppearance(action);
-      s.squads.push({id:uid(),name:action.name.trim(),type:action.kind,mood:action.mood,...squadAppearance(action),leaderId:me,deputyId:null,slots:[{id:uid(),role:action.role.trim(),playerId:me},...action.roles.map(role=>({id:uid(),role:role.trim(),playerId:null}))]}); break;
+      s.squads.push({id:uid(),name:action.name.trim(),type:action.kind,mood:action.mood,...squadAppearance(action),leaderId:join?me:null,deputyId:null,slots:[{id:uid(),role:action.role.trim(),playerId:join?me:null},...action.roles.map(role=>({id:uid(),role:role.trim(),playerId:null}))]}); break;
     }
     case 'edit': {
       manage(); q.name=action.name.trim(); q.type=action.kind; q.mood=action.mood;
@@ -91,10 +92,10 @@ export function reduce(state, action) {
     }
     case 'assign': {
       manage(); const slot=q.slots.find(t=>t.id===action.slotId); if(!slot || slot.playerId) fail('Place indisponible.');
-      if(!s.players.some(p=>p.id===action.playerId) || membership(s,action.playerId)) fail('Joueur indisponible.'); slot.playerId=action.playerId; break;
+      if(!s.players.some(p=>p.id===action.playerId) || membership(s,action.playerId)) fail('Joueur indisponible.'); slot.playerId=action.playerId;if(q.leaderId===null)q.leaderId=action.playerId;break;
     }
     case 'remove': {
-      manage(); if(q.leaderId===action.playerId) fail('Transfère d’abord le commandement.');
+      manage(); if(q.leaderId===action.playerId){if(q.slots.some(t=>t.playerId&&t.playerId!==action.playerId))fail('Transfère d’abord le commandement.');q.leaderId=null;}
       q.slots.forEach(t=>{if(t.playerId===action.playerId)t.playerId=null;}); if(q.deputyId===action.playerId)q.deputyId=null; break;
     }
     case 'leader': { manage(); if(!q.slots.some(t=>t.playerId===action.playerId)) fail('Le chef doit être membre.'); q.leaderId=action.playerId; if(q.deputyId===action.playerId)q.deputyId=null; break; }
@@ -111,6 +112,11 @@ export function reduce(state, action) {
       if(!canManageOperation(s,o))fail('Action réservée à l’organisateur ou à un admin.');
       if(action.type==='operationDelete'){s.operations=s.operations.filter(t=>t.id!==o.id);break;}
       Object.assign(o,{name:action.name.trim(),description:action.description.trim(),type:action.kind,server:action.server.trim(),startsAt:action.startsAt,phase:action.phase});if(o.phase==='Terminée')o.briefingSquadIds=[];break;
+    }
+    case 'operationAssign': {
+      if(!s.players.find(p=>p.id===me)?.admin)fail('Action réservée aux admins.');requireSquad();
+      const target=action.operationId===null?null:s.operations.find(o=>o.id===action.operationId);if(action.operationId!==null&&!target)fail('Opération introuvable.');if(target?.phase==='Terminée')fail('Cette opération est terminée.');
+      for(const o of s.operations){o.squadIds=o.squadIds.filter(id=>id!==q.id);o.briefingSquadIds=o.briefingSquadIds.filter(id=>id!==q.id);}if(target)target.squadIds.push(q.id);break;
     }
     case 'operationJoin':case 'operationLeave':case 'briefingJoin':case 'briefingLeave': {
       const o=s.operations.find(o=>o.id===action.operationId);if(!o)fail('Opération introuvable.');requireSquad();

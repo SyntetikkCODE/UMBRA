@@ -4,6 +4,17 @@ Historique reconstitué à partir des archives et des versions conservées. Les 
 
 [Application et téléchargement](https://hexagone.lotus-order.fr/) · [Historique sur le site](https://hexagone.lotus-order.fr/patchnotes/)
 
+## 0.20.0 — Radio opération et gestion des escouades (2026-11-23)
+
+- Les leaders extérieurs apparaissent dans l’overlay sous le nom de leur salon, séparément des joueurs de ton vocal.
+- Annonce générale devient Opération : seuls les joueurs des escouades inscrites à la même opération s’entendent. Ce canal suit l’inscription de ton escouade, y compris dans l’accueil. Sans opération, il est désactivé.
+- Dans Ma squad, le bouton Connectée devient Déconnexion en rouge au survol. Un clic quitte le vocal sans quitter l’escouade.
+- Clic droit sur un vocal pour ouvrir ou modifier son escouade. L’ordre des vocaux se personnalise par glisser-déposer dans chaque catégorie et reste enregistré sur ton PC.
+- Les admins peuvent préparer plusieurs escouades sans les rejoindre. Elles conservent leurs places ; le premier joueur qui les rejoint devient chef. Le dernier membre peut partir en laissant la composition disponible.
+- Les admins peuvent glisser une carte d’escouade dans une opération ou vers les escouades libres, sans intervention du chef.
+- Descriptions des réglages allégées. Raccourcis renommés Push To Talk et Opération. La déconnexion du compte reste uniquement dans Réglages → Mon compte.
+- Code d’invitation de la team simplifié.
+
 ## 0.19.0 — Overlay vocal et sortie audio à 300 % (2026-11-23)
 
 - Nouvel overlay vocal à activer dans Réglages → Voix & vidéo : seulement le nom du salon et ses joueurs en dessous, sans panneau de fond. Tous les joueurs restent visibles ; leur pseudo et l’anneau de leur photo passent en bleu lorsqu’ils parlent. Les communications leaders et annonces écoutées sont aussi signalées, même quand HEXAGONE est réduit.

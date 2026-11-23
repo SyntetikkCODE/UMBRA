@@ -1,4 +1,4 @@
-# HEXAGONE 0.19.0 — Wardogs Companion
+# HEXAGONE 0.20.0 — Wardogs Companion
 
 Téléchargement officiel : https://hexagone.lotus-order.fr/
 
@@ -41,7 +41,9 @@ Notices tierces et sources LGPL : LICENCES. Politique de confidentialité dans l
 - Déplacement vocal : ajouter un joueur ne déconnecte plus les personnes du salon de destination. Si une liaison vocale est coupée de façon inattendue, l’app tente de la rétablir automatiquement. Au retrait d’un invité, une brève resynchronisation reste possible pour révoquer son ancien accès privé, sans reconnexion manuelle.
 
 - Répartition dans le casque : Réglages → Voix & vidéo → Transmission & écoute. Choisis les deux oreilles, la gauche ou la droite pour chaque réseau ; le réglage est local et ne change pas le son stéréo des partages.
-- Annonce générale est accessible à tous les joueurs connectés au vocal en maintenant leur touche (F10 par défaut). Les leaders conservent leur réseau réservé.
+- Opération est accessible aux joueurs des escouades inscrites à la même opération (F10 par défaut). Les leaders conservent leur réseau réservé.
 - Barre des tâches Windows : pastille blanche pour les messages non lus, rouge pour les mentions personnelles et @everyone. Lire le salon concerné retire ses notifications ; les autres restent signalées.
 
 Overlay vocal : Réglages → Voix & vidéo → Overlay vocal. Activer, choisir le coin et l’écran, puis utiliser l’aperçu. L’overlay reste visible quand l’app est réduite et laisse les clics au jeu. Utiliser le plein écran fenêtré ; le plein écran exclusif n’est pas pris en charge. Volume de sortie : jusqu’à 300 % dans Voix & vidéo.
+
+Préparation des escouades : les admins peuvent décocher « Rejoindre cette escouade » à la création. Une escouade vide reste disponible, avec un chef attribué au premier joueur qui la rejoint. Clic droit sur un vocal pour ouvrir ou modifier son escouade. Ordre personnel des vocaux par glisser-déposer ; déplacement des cartes dans une opération réservé aux admins. Déconnexion du compte : Réglages → Mon compte.

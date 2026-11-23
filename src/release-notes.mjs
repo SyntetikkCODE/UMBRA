@@ -2,6 +2,16 @@
 // Early prototypes are grouped because their individual release logs were not retained.
 export const HISTORY_NOTE='Historique reconstitué à partir des archives et des versions conservées. Les prototypes 0.1 à 0.3.1 sont regroupés ; les versions suivantes sont détaillées séparément. Les notes décrivent les changements de chaque époque, pas uniquement le fonctionnement actuel.';
 export const RELEASE_NOTES=[
+ {version:'0.20.0',title:'Radio opération et gestion des escouades',date:'2026-11-23',changes:[
+  'Les leaders extérieurs apparaissent dans l’overlay sous le nom de leur salon, séparément des joueurs de ton vocal.',
+  'Annonce générale devient Opération : seuls les joueurs des escouades inscrites à la même opération s’entendent. Ce canal suit l’inscription de ton escouade, y compris dans l’accueil. Sans opération, il est désactivé.',
+  'Dans Ma squad, le bouton Connectée devient Déconnexion en rouge au survol. Un clic quitte le vocal sans quitter l’escouade.',
+  'Clic droit sur un vocal pour ouvrir ou modifier son escouade. L’ordre des vocaux se personnalise par glisser-déposer dans chaque catégorie et reste enregistré sur ton PC.',
+  'Les admins peuvent préparer plusieurs escouades sans les rejoindre. Elles conservent leurs places ; le premier joueur qui les rejoint devient chef. Le dernier membre peut partir en laissant la composition disponible.',
+  'Les admins peuvent glisser une carte d’escouade dans une opération ou vers les escouades libres, sans intervention du chef.',
+  'Descriptions des réglages allégées. Raccourcis renommés Push To Talk et Opération. La déconnexion du compte reste uniquement dans Réglages → Mon compte.',
+  'Code d’invitation de la team simplifié.'
+ ]},
  {version:'0.19.0',title:'Overlay vocal et sortie audio à 300 %',date:'2026-11-23',changes:[
   'Nouvel overlay vocal à activer dans Réglages → Voix & vidéo : seulement le nom du salon et ses joueurs en dessous, sans panneau de fond. Tous les joueurs restent visibles ; leur pseudo et l’anneau de leur photo passent en bleu lorsqu’ils parlent. Les communications leaders et annonces écoutées sont aussi signalées, même quand HEXAGONE est réduit.',
   'Choisis l’un des quatre coins et l’écran d’affichage, avec un aperçu de cinq secondes. L’overlay laisse passer les clics, ne prend pas le focus et se masque à la déconnexion. Pour le jeu, utilise le plein écran fenêtré ; le plein écran exclusif n’est pas pris en charge.',

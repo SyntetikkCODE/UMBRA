@@ -14,7 +14,7 @@ const launch=()=>electron.launch({...(executablePath?{executablePath}:{}),args:[
 let app=await launch(),page;const errors=[];
 const wait=async()=>{page=await app.firstWindow();page.on('pageerror',e=>errors.push(e.message));await page.locator('#auth-form').waitFor();await page.evaluate(()=>document.fonts.ready);assert.equal(await page.evaluate(()=>[...document.fonts].some(f=>f.family==='Inter'&&f.status==='loaded')),true);assert.equal(await page.locator('.window-controls .lucide').count(),3);};
 const auth=async(name,password)=>{await page.locator('#auth-name').fill(name);await page.locator('#auth-password').fill(password);await page.locator('#auth-form [type=submit]').click();};
-const logout=async()=>{await page.locator('.sidebar [data-action=logout]').click();await page.locator('#auth-form').waitFor();};
+const logout=async()=>{await page.locator('[data-nav=settings]').click();await page.locator('[data-action=settingsTab][data-tab=account]').click();await page.locator('[data-action=logout]').click();await page.locator('#auth-form').waitFor();};
 try{
  await wait();assert.equal(await page.getByRole('heading',{name:'Créer un compte'}).count(),1);assert.equal(await page.getByText('Swade',{exact:true}).count(),0);
  await page.screenshot({path:path.join(artifacts,'v2-01-inscription.png')});

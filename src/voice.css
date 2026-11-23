@@ -13,3 +13,7 @@
 .speech-ring.is-muted,.speech-ring.is-deafened{border-color:#686868;background:transparent}
 .speech-ring.is-muted .voice-mute-badge,.speech-ring.is-deafened .voice-mute-badge{display:flex;align-items:center;justify-content:center;position:absolute;right:-4px;bottom:-4px;width:16px;height:16px;border:2px solid #191919;border-radius:50%;background:#191919;color:#b9b9b9}
 .speech-ring .voice-mute-badge svg{width:12px;height:12px;margin:0;flex-shrink:0;color:inherit}
+
+[data-squad-connect] .disconnect-label{display:none} .btn.gold[data-squad-connect].vocal-joined:is(:hover,:focus-visible){background:#79333c!important;border-color:#b55061!important;color:#ffe1e6!important}[data-squad-connect].vocal-joined:is(:hover,:focus-visible) .connection-label{display:none}[data-squad-connect].vocal-joined:is(:hover,:focus-visible) .disconnect-label{display:inline}.rail-squad.voice-order-target{box-shadow:inset 0 2px #85aaff}.operation-drop-target{outline:2px dashed #729aeb;outline-offset:-3px}.free-squads:empty{min-height:60px}.free-squads{min-height:70px}.squad-card[draggable=true]>.card-head{cursor:grab}
+
+.btn.gold[data-squad-connect].vocal-joined{background:#234932!important;border-color:#366947!important;color:#c8eed0!important}

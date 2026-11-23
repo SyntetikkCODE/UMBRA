@@ -21,7 +21,8 @@ function createVoiceOverlay({BrowserWindow,screen,dataDir,root,env=process.env})
   if(!visible){window?.hide();return;}
   ensureWindow();if(!loaded)return;
   const shown=previewing?{...overlayPayload(),preview:true,label:'Aperçu de l’overlay'}:payload;
-  window.setBounds(overlayBounds(display().workArea,settings.corner,shown.speakers.length,shown.extra),false);
+  const groups=new Set(shown.speakers.filter(p=>p.groupId!=='primary').map(p=>p.groupId)).size;
+  window.setBounds(overlayBounds(display().workArea,settings.corner,shown.speakers.length,shown.extra,groups),false);
   window.webContents.send('voice-overlay:render',shown);if(!window.isVisible())window.showInactive();
  }
  const reposition=()=>render();for(const e of ['display-added','display-removed','display-metrics-changed'])screen.on(e,reposition);

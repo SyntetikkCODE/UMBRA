@@ -4,7 +4,8 @@ export function voiceChannels(state,userId,{visitSquadId=null,visitLobby=false,f
  const player=state.players.find(p=>p.id===userId);if(!player)throw new Error('Compte introuvable.');
  const admins=state.players.filter(p=>p.admin).map(p=>p.id);
  const make=(kind,base,label,allowed,publish=true)=>({kind,label,canPublish:publish,room:namespace+'-'+base+'-'+createHash('sha256').update(epoch+'|'+(primaryEpochs.get(base)||0)+'|'+[...new Set(allowed)].sort().join('|')).digest('hex').slice(0,14)});
- let q=membership(state,userId);
+ const home=membership(state,userId),operation=home&&operationForSquad(state,home.id);
+ let q=home;
  if(visitSquadId){if(!player.admin)throw new Error('Visite vocale réservée aux admins.');q=state.squads.find(q=>q.id===visitSquadId);if(!q)throw new Error('Escouade introuvable.');}
  if(visitLobby)q=null;
  const forced=forcedDestinations.get(userId);if(forced)q=forced==='lobby'?null:state.squads.find(s=>s.id===forced)||q;
@@ -17,6 +18,9 @@ export function voiceChannels(state,userId,{visitSquadId=null,visitLobby=false,f
  const channels=[primary];
  const leaders=state.players.filter(p=>leaderAccess(state,p.id)).map(p=>p.id);
  if(leaderAccess(state,userId))channels.push(make('leaders','leaders','Leaders de la team',leaders));
- channels.push(make('broadcast','announcements','Annonce générale',state.players.map(p=>p.id)));
+ if(operation&&operation.phase!=='Terminée'){
+  const members=state.squads.filter(s=>operation.squadIds.includes(s.id)).flatMap(s=>s.slots.filter(t=>t.playerId).map(t=>t.playerId));
+  channels.push({...make('broadcast','operation-'+operation.id,'Opération · '+operation.name,members),operationId:operation.id});
+ }
  return channels;
 }
