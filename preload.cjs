@@ -1,5 +1,10 @@
 const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('desktop', {
+  overlaySettings: () => ipcRenderer.invoke('overlay:settings'),
+  configureOverlay: value => ipcRenderer.invoke('overlay:configure',value),
+  previewOverlay: () => ipcRenderer.invoke('overlay:preview'),
+  overlayActivity: value => ipcRenderer.send('voice:overlay',value),
+  overlayProfiles: value => ipcRenderer.send('voice:overlay-profiles',value),
   updatesStatus: () => ipcRenderer.invoke('updates:status'),
   updatesReady: () => ipcRenderer.invoke('updates:ready'),
   updatesCheck: () => ipcRenderer.invoke('updates:check'),

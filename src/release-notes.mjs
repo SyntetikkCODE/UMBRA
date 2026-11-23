@@ -2,6 +2,12 @@
 // Early prototypes are grouped because their individual release logs were not retained.
 export const HISTORY_NOTE='Historique reconstitué à partir des archives et des versions conservées. Les prototypes 0.1 à 0.3.1 sont regroupés ; les versions suivantes sont détaillées séparément. Les notes décrivent les changements de chaque époque, pas uniquement le fonctionnement actuel.';
 export const RELEASE_NOTES=[
+ {version:'0.19.0',title:'Overlay vocal et sortie audio à 300 %',date:'2026-11-23',changes:[
+  'Nouvel overlay vocal à activer dans Réglages → Voix & vidéo : seulement le nom du salon et ses joueurs en dessous, sans panneau de fond. Tous les joueurs restent visibles ; leur pseudo et l’anneau de leur photo passent en bleu lorsqu’ils parlent. Les communications leaders et annonces écoutées sont aussi signalées, même quand HEXAGONE est réduit.',
+  'Choisis l’un des quatre coins et l’écran d’affichage, avec un aperçu de cinq secondes. L’overlay laisse passer les clics, ne prend pas le focus et se masque à la déconnexion. Pour le jeu, utilise le plein écran fenêtré ; le plein écran exclusif n’est pas pris en charge.',
+  'Le volume de sortie peut monter jusqu’à 300 %, avec une amplification effective du son reçu. Les volumes par joueur et par stream, l’atténuation et les choix d’oreille continuent de s’appliquer.',
+  'Le retour du test micro et les sons de notification prennent également en charge le volume de sortie amplifié. Les réglages existants restent inchangés et l’overlay est désactivé par défaut.'
+ ]},
  {version:'0.18.1',title:'Connexion vocale et périphériques audio',date:'2026-11-21',changes:[
   'Si un microphone ou une sortie mémorisée n’est plus reconnu après une mise à jour ou un changement de matériel, l’application retrouve automatiquement le périphérique Windows par défaut et enregistre ce choix. Les volumes et traitements audio sont conservés.',
   'Les erreurs de microphone sans texte sont remplacées par une explication lisible : autorisation refusée, microphone absent, occupé ou réglages incompatibles. Le message de connexion reste visible dans la barre vocale, même après la disparition de la notification.',

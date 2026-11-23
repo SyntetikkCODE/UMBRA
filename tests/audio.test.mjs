@@ -17,7 +17,7 @@ test('Priority ducking affects only the squad and respects the toggle',()=>{
  const s=audioSettings({squadVolume:100});assert.equal(playbackVolume('primary',s,{leadersActive:true}),.25);assert.equal(playbackVolume('leaders',s,{leadersActive:true}),1);assert.equal(playbackVolume('primary',{...s,ducking:false},{leadersActive:true}),1);
 });
 test('Invalid gains, volumes and output IDs are rejected',()=>{
- for(const [key,value]of [['inputVolume',201],['inputVolume',-1],['outputVolume',101],['outputVolume',NaN],['soundsVolume',Infinity],['output',{}],['notificationSounds','yes'],['primaryEar','middle'],['leadersEar',1],['broadcastEar',null]])assert.throws(()=>validateAudio({...audioSettings(),[key]:value}));
+ for(const [key,value]of [['inputVolume',201],['inputVolume',-1],['outputVolume',301],['outputVolume',NaN],['soundsVolume',Infinity],['output',{}],['notificationSounds','yes'],['primaryEar','middle'],['leadersEar',1],['broadcastEar',null]])assert.throws(()=>validateAudio({...audioSettings(),[key]:value}));
  validateAudio(audioSettings({primaryEar:'right',leadersEar:'left',broadcastEar:'both'}));
 });
 test('VAD opens on voice and closes after the short silence hold',()=>{

@@ -9,6 +9,7 @@ import {StreamAudioPreferences,streamGain} from './stream-audio.mjs';
 import {applicationAudio} from './application-audio.mjs';
 import {screenQuality,screenShareOptions} from './screen-quality.mjs';
 import {captureMicrophone,voiceError} from './audio-devices.mjs';
+import {splitOutputGain} from './output-gain.mjs';
 export class VoiceClient {
  constructor(bridge,changed=()=>{}) {
   this.bridge=bridge;this.changed=changed;this.enabled=false;this.connecting=false;this.rooms=new Map();this.stream=null;this.audioContext=null;this.frame=null;this.queue=Promise.resolve();this.txQueue=Promise.resolve();this.transmitting=null;this.speaking=false;this.error='';this.muted=false;this.deafened=false;
@@ -175,8 +176,9 @@ export class VoiceClient {
  }
  applyVolumes(){
   const leadersActive=this.rooms.get('leaders')?.room.activeSpeakers.some(p=>p.identity!==this.rooms.get('leaders')?.room.localParticipant.identity);
-  for(const[k,e]of this.rooms)for(const el of e.elements)el.volume=el.dataset.voiceSource===Track.Source.ScreenShareAudio?(this.deafened?0:this.settings.outputVolume/100):playbackVolume(k,this.settings,{deafened:this.deafened,leadersActive});
-  for(const [kind,e] of this.rooms)for(const received of e.received?.values()||[]){received.graph.setEar(this.settings[kind+'Ear']||'both');const id=received.element.dataset.voiceParticipant,isStream=received.source===Track.Source.ScreenShareAudio,gain=isStream?streamGain(this.streamAudio(id),this.streamDucking):this.participantVolume(id)/100;received.graph.gain.gain.setTargetAtTime(gain,this.audioContext.currentTime,isStream?.08:.015);received.element.dataset.participantGain=String(gain);}
+  const output=kind=>kind==='stream'?(this.deafened?0:this.settings.outputVolume/100):playbackVolume(kind,this.settings,{deafened:this.deafened,leadersActive});
+  for(const[k,e]of this.rooms)for(const el of e.elements)el.volume=splitOutputGain(output(el.dataset.voiceSource===Track.Source.ScreenShareAudio?'stream':k)).volume;
+  for(const [kind,e] of this.rooms)for(const received of e.received?.values()||[]){received.graph.setEar(this.settings[kind+'Ear']||'both');const id=received.element.dataset.voiceParticipant,isStream=received.source===Track.Source.ScreenShareAudio,gain=(isStream?streamGain(this.streamAudio(id),this.streamDucking):this.participantVolume(id)/100)*splitOutputGain(output(isStream?'stream':kind)).boost;received.graph.gain.gain.setTargetAtTime(gain,this.audioContext.currentTime,isStream?.08:.015);received.element.dataset.participantGain=String(gain);}
  }
  observePresence(users,selfId){
   this.lastPresence={users,selfId};

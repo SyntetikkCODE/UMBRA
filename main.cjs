@@ -16,6 +16,7 @@ let audioPreferences=null;
 let ptt;
 let updates;
 let defaultAudio;
+let voiceOverlay;
 const captureSelection=require('./src/screen-capture.cjs').createCaptureSelection();
 const applicationAudio=require('./src/application-audio.cjs').createApplicationAudio({executable:app.isPackaged?path.join(process.resourcesPath,'UMBRA.AudioCapture.exe'):path.join(__dirname,'native/bin/UMBRA.AudioCapture.exe'),send:event=>{if(!win||win.isDestroyed())return false;win.webContents.send('capture:audio-data',event);return true;}});
 app.on('before-quit',()=>applicationAudio.stop());
@@ -30,9 +31,9 @@ function createWindow() {
   win = new BrowserWindow({ width: 1540, height: 990, minWidth: 1120, minHeight: 740, ...(placement||{}), frame: false, backgroundColor: '#101010', show: false, title: 'HEXAGONE — Wardogs Companion', icon: path.join(__dirname, 'assets/hexagone.ico'), webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true, backgroundThrottling: false } });
   win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
   win.webContents.on('will-navigate', (e, url) => { if (!url.startsWith('umbra://app/')) e.preventDefault(); });
-  win.webContents.on('render-process-gone',()=>applicationAudio.stop());
+  win.webContents.on('render-process-gone',()=>{applicationAudio.stop();voiceOverlay?.clear();});
   win.webContents.on('did-start-navigation',(_event,_url,inPlace,mainFrame)=>{if(mainFrame&&!inPlace)applicationAudio.stop();});
-  win.on('closed',()=>applicationAudio.stop());
+  win.on('closed',()=>{applicationAudio.stop();voiceOverlay?.close();});
   win.once('ready-to-show', () => placement?win.showInactive():win.show());
   win.loadURL('umbra://app/index.html');
 }
@@ -41,6 +42,7 @@ app.whenReady().then(async () => {
   const { Accounts } = await import('./src/accounts.mjs');
   accounts = new Accounts(app.getPath('userData'));
   try { await accounts.open(); } catch(error) { startupError=error.message; }
+  voiceOverlay=require('./src/overlay.cjs').createVoiceOverlay({BrowserWindow,screen,dataDir:app.getPath('userData'),root:__dirname});await voiceOverlay.open();
   const {Remote,serverUrl}=await import('./src/remote.mjs');
   const {createPtt}=require('./src/ptt.cjs');
   ptt=createPtt(held=>{if(win&&!win.isDestroyed())win.webContents.send('voice:keys',held);});
@@ -48,7 +50,8 @@ app.whenReady().then(async () => {
   let saved={};try{saved=JSON.parse(await fs.readFile(preferencesFile,'utf8'));}catch{}
   audioPreferences={...defaultAudio,...(saved.audioPreferences||accounts.db?.state?.settings)};
   const setRemote=url=>{
-    remote?.close();remote=url?new Remote(url,event=>{
+    remote?.close();voiceOverlay.clear();remote=url?new Remote(url,event=>{
+      if(event.type==='sessionExpired'||event.type==='network'&&!event.connected)voiceOverlay.clear();
       if(event.type==='state')event.state=withPreferences(event.state);
       if(win&&!win.isDestroyed())win.webContents.send('network:event',event);
     }):null;
@@ -91,6 +94,9 @@ app.whenReady().then(async () => {
   const {createUpdates}=require('./src/updates.cjs');
   updates=createUpdates({app,changed:state=>{if(win&&!win.isDestroyed())win.webContents.send('updates:state',state);},beforeInstall:async()=>{ptt.stop();remote?.close();await accounts.queue;}});
   handle('updates:status',()=>updates.status());
+  handle('overlay:settings',()=>voiceOverlay.info());
+  handle('overlay:configure',value=>voiceOverlay.configure(value));
+  handle('overlay:preview',()=>{if(!remote?.token&&!accounts.userId)throw new Error('Connexion requise.');voiceOverlay.preview();return true;});
   handle('updates:ready',()=>updates.ready);
   handle('updates:check',()=>updates.check());
   handle('updates:install',()=>updates.install());
@@ -106,7 +112,7 @@ app.whenReady().then(async () => {
     try{const r=remote?await remote.resume(savedSession.token):accounts.session(savedSession.userId);if(!remote)accounts.userId=savedSession.userId;r.state=withPreferences(r.state);return r;}
     catch(error){if(!remote||error.status===401)await remembered.clear();return null;}
   });
-  handle('auth:logout', async()=>{ptt.stop();require('./src/taskbar-badge.cjs').setTaskbarBadge(win,nativeImage,{unread:0,mentions:0});await remembered.clear();if(remote)await remote.logout().catch(()=>{});else await accounts.logout();});
+  handle('auth:logout', async()=>{ptt.stop();voiceOverlay.clear();require('./src/taskbar-badge.cjs').setTaskbarBadge(win,nativeImage,{unread:0,mentions:0});await remembered.clear();if(remote)await remote.logout().catch(()=>{});else await accounts.logout();});
   handle('auth:tutorial', ()=>remote?remote.request('tutorial',{}):accounts.tutorialDone());
   handle('state:load', async()=>{const r=remote?await remote.request('state'):accounts.session();r.state=withPreferences(r.state);return r;});
   handle('state:action', async action=>{
@@ -154,7 +160,7 @@ app.whenReady().then(async () => {
   handle('network:configure',async url=>{if(url)url=serverUrl(url);if(!remote&&url)audioPreferences=accounts.db?.state?.settings||audioPreferences||defaultAudio;ptt.stop();await remembered.clear();setRemote(url);await saveConnection();return {shared:!!remote,url:remote?.base||''};});
   handle('network:invite',()=>{if(!remote)throw new Error('Connexion au serveur requise.');return remote.request('admin/invite');});
   handle('voice:plan',()=>{if(!remote)throw new Error('Connecte-toi à un serveur partagé pour utiliser le vocal.');return remote.request('voice/plan');});
-  handle('voice:disconnect',async()=>{ptt.stop();if(remote?.token)try{await remote.request('voice/disconnect',{});}catch{}return true;});
+  handle('voice:disconnect',async()=>{ptt.stop();voiceOverlay.clear();if(remote?.token)try{await remote.request('voice/disconnect',{});}catch{}return true;});
   handle('voice:presence',()=>remote?remote.request('voice/presence',{}):true);
   handle('voice:move',value=>{if(!remote)throw new Error('Serveur partagé requis.');return remote.request('voice/move',value);});
   handle('voice:visit',squadId=>{if(!remote)throw new Error('Serveur partagé requis.');return remote.request('voice/visit',{squadId});});
@@ -175,6 +181,8 @@ app.whenReady().then(async () => {
   });
   ipcMain.on('voice:activity',(event,data)=>{guard(event);remote?.activity(data.speaking===true,data.channel);});
   ipcMain.on('voice:status',(event,data)=>{guard(event);remote?.voiceStatus(data);});
+  ipcMain.on('voice:overlay',(event,data)=>{guard(event);if(!remote?.token)return voiceOverlay.clear();voiceOverlay.update(data);});
+  ipcMain.on('voice:overlay-profiles',(event,data)=>{guard(event);if(remote?.token)voiceOverlay.profiles(data);});
   for (const action of ['minimize', 'maximize', 'close']) ipcMain.on('window:' + action, e => { guard(e); if (action === 'maximize') win.isMaximized() ? win.unmaximize() : win.maximize(); else win[action](); });
   createWindow();
   updates.start();
@@ -182,6 +190,6 @@ app.whenReady().then(async () => {
 app.on('window-all-closed', () => app.quit());
 let closing = false;
 app.on('before-quit', event => {
-  if (!closing) { event.preventDefault(); closing = true; updates?.stop();ptt?.stop();remote?.close(); (accounts?.queue || Promise.resolve()).then(() => app.quit(), () => app.quit()); }
+    if (!closing) { event.preventDefault(); closing = true; voiceOverlay?.close();updates?.stop();ptt?.stop();remote?.close(); (accounts?.queue || Promise.resolve()).then(() => app.quit(), () => app.quit()); }
 });
 }

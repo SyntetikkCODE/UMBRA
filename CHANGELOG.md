@@ -4,6 +4,13 @@ Historique reconstitué à partir des archives et des versions conservées. Les 
 
 [Application et téléchargement](https://hexagone.lotus-order.fr/) · [Historique sur le site](https://hexagone.lotus-order.fr/patchnotes/)
 
+## 0.19.0 — Overlay vocal et sortie audio à 300 % (2026-11-23)
+
+- Nouvel overlay vocal à activer dans Réglages → Voix & vidéo : seulement le nom du salon et ses joueurs en dessous, sans panneau de fond. Tous les joueurs restent visibles ; leur pseudo et l’anneau de leur photo passent en bleu lorsqu’ils parlent. Les communications leaders et annonces écoutées sont aussi signalées, même quand HEXAGONE est réduit.
+- Choisis l’un des quatre coins et l’écran d’affichage, avec un aperçu de cinq secondes. L’overlay laisse passer les clics, ne prend pas le focus et se masque à la déconnexion. Pour le jeu, utilise le plein écran fenêtré ; le plein écran exclusif n’est pas pris en charge.
+- Le volume de sortie peut monter jusqu’à 300 %, avec une amplification effective du son reçu. Les volumes par joueur et par stream, l’atténuation et les choix d’oreille continuent de s’appliquer.
+- Le retour du test micro et les sons de notification prennent également en charge le volume de sortie amplifié. Les réglages existants restent inchangés et l’overlay est désactivé par défaut.
+
 ## 0.18.1 — Connexion vocale et périphériques audio (2026-11-21)
 
 - Si un microphone ou une sortie mémorisée n’est plus reconnu après une mise à jour ou un changement de matériel, l’application retrouve automatiquement le périphérique Windows par défaut et enregistre ce choix. Les volumes et traitements audio sont conservés.

@@ -1,4 +1,4 @@
-# HEXAGONE 0.18.1 — Wardogs Companion
+# HEXAGONE 0.19.0 — Wardogs Companion
 
 Téléchargement officiel : https://hexagone.lotus-order.fr/
 
@@ -43,3 +43,5 @@ Notices tierces et sources LGPL : LICENCES. Politique de confidentialité dans l
 - Répartition dans le casque : Réglages → Voix & vidéo → Transmission & écoute. Choisis les deux oreilles, la gauche ou la droite pour chaque réseau ; le réglage est local et ne change pas le son stéréo des partages.
 - Annonce générale est accessible à tous les joueurs connectés au vocal en maintenant leur touche (F10 par défaut). Les leaders conservent leur réseau réservé.
 - Barre des tâches Windows : pastille blanche pour les messages non lus, rouge pour les mentions personnelles et @everyone. Lire le salon concerné retire ses notifications ; les autres restent signalées.
+
+Overlay vocal : Réglages → Voix & vidéo → Overlay vocal. Activer, choisir le coin et l’écran, puis utiliser l’aperçu. L’overlay reste visible quand l’app est réduite et laisse les clics au jeu. Utiliser le plein écran fenêtré ; le plein écran exclusif n’est pas pris en charge. Volume de sortie : jusqu’à 300 % dans Voix & vidéo.

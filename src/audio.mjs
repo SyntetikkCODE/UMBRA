@@ -3,7 +3,7 @@ export function captureOptions(settings){const s=audioSettings(settings);return 
 export const audioSettings=value=>({...DEFAULT_AUDIO,...value});
 export function validateAudio(t){
  if(!t||![t.mic,t.output??''].every(x=>typeof x==='string'&&x.length<=300)||typeof t.ducking!=='boolean')throw new Error('Réglages audio invalides.');
- for(const [key,max]of [['squadVolume',100],['leadersVolume',100],['inputVolume',200],['outputVolume',100],['soundsVolume',100]]){
+ for(const [key,max]of [['squadVolume',100],['leadersVolume',100],['inputVolume',200],['outputVolume',300],['soundsVolume',100]]){
   const v=t[key]??DEFAULT_AUDIO[key];if(!Number.isFinite(v)||v<0||v>max)throw new Error('Réglages invalides : volume audio hors limites.');
  }
  if(t.notificationSounds!==undefined&&typeof t.notificationSounds!=='boolean')throw new Error('Réglages des sons invalides.');
