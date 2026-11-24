@@ -1,3 +1,4 @@
+import {dismissStartup} from './startup-test-helper.mjs';
 import {_electron as electron} from 'playwright';
 import {spawn} from 'node:child_process';
 import fs from 'node:fs/promises';
@@ -19,7 +20,7 @@ async function client(name){
  const app=await electron.launch({...(executablePath?{executablePath}:{}),args:[...(!executablePath?[root]:[]),'--use-fake-ui-for-media-stream','--use-fake-device-for-media-stream','--use-file-for-fake-audio-capture='+signal],env});apps.push(app);
  const page=await app.firstWindow();await page.locator('#auth-form').waitFor();await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].hide());
  if(await page.getByRole('heading',{name:'Se connecter'}).count())await page.locator('[data-action=auth-mode]').click();
- await page.locator('#auth-name').fill(name);await page.locator('#auth-password').fill('vad-test-password');await page.locator('[name=joinCode]').fill('vad-test');await page.locator('#auth-form [type=submit]').click();await page.locator('#tour').waitFor();await page.locator('#tour-skip').click();await page.locator('#tour').waitFor({state:'detached'});
+ await page.locator('#auth-name').fill(name);await page.locator('#auth-password').fill('vad-test-password');await page.locator('[name=joinCode]').fill('vad-test');await page.locator('#auth-form [type=submit]').click();await page.locator('#tour').waitFor();await page.locator('#tour-skip').click();await dismissStartup(page);await page.locator('#tour').waitFor({state:'detached'});
  await page.evaluate(()=>window.desktop.action({type:'settings',values:{audioProfile:'studio',noiseSuppression:false,echoCancellation:false,autoGainControl:false,outputVolume:0}}));
  return {app,page};
 }

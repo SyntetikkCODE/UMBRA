@@ -1,3 +1,4 @@
+import {dismissStartup} from './startup-test-helper.mjs';
 import {_electron as electron} from 'playwright';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
@@ -25,7 +26,7 @@ async function client(name){
  const page=await app.firstWindow();pages.push(page);app.process().stderr?.on('data',b=>fs.appendFile(path.join(dir,name+'-electron.log'),b).catch(()=>{}));page.on('console',msg=>{if(['error','warning'].includes(msg.type()))fs.appendFile(path.join(dir,name+'-browser.log'),msg.text().replace(/access_token=[^& ]+/g,'access_token=REDACTED')+'\n').catch(()=>{});});page.on('pageerror',e=>errors.push(name+': '+e.message));await page.locator('#auth-form').waitFor();await app.evaluate(({BrowserWindow})=>BrowserWindow.getAllWindows()[0].hide());
  if(await page.getByRole('heading',{name:'Se connecter'}).count())await page.locator('[data-action=auth-mode]').click();
  await page.locator('#auth-name').fill(name);await page.locator('#auth-password').fill('voice-test-password');await page.locator('[name=joinCode]').fill(joinCode);await page.locator('#auth-form [type=submit]').click();
- await page.locator('#tour').waitFor();await page.locator('#tour-skip').click();await page.locator('#tour').waitFor({state:'detached'});
+ await page.locator('#tour').waitFor();await page.locator('#tour-skip').click();await dismissStartup(page);await page.locator('#tour').waitFor({state:'detached'});
  const session=await page.evaluate(()=>window.desktop.load());
  await page.evaluate(()=>{window.__soundEvents=[];const original=HTMLMediaElement.prototype.play;HTMLMediaElement.prototype.play=function(){if(this.dataset.voiceSound){window.__soundEvents.push({kind:this.dataset.voiceSound,sink:this.sinkId});this.muted=true;}return original.call(this);};const capture=navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);navigator.mediaDevices.getUserMedia=async options=>{const stream=await capture(options);window.__testCapture=stream;return stream;};});
  await page.evaluate(()=>window.desktop.action({type:'settings',values:{squadVolume:0,leadersVolume:0,notificationSounds:true}}));

@@ -4,6 +4,13 @@ Historique reconstitué à partir des archives et des versions conservées. Les 
 
 [Application et téléchargement](https://hexagone.lotus-order.fr/) · [Historique sur le site](https://hexagone.lotus-order.fr/patchnotes/)
 
+## 0.21.1 — Nouveautés à la connexion et découverte de l’overlay (2026-11-24)
+
+- À la connexion, une fenêtre centrale regroupe les patchs publiés depuis la dernière version consultée, y compris si plusieurs mises à jour ont été sautées. Sans nouveauté, elle ne s’affiche pas.
+- Une présentation de l’overlay vocal apparaît une seule fois par compte sur ce PC, avec un accès direct à ses réglages. L’activation reste facultative.
+- Les fenêtres se présentent après le guide de première ouverture et ne se superposent pas. Leur lecture est mémorisée séparément pour chaque compte et serveur.
+- Lors du premier passage depuis l’ajout de ce suivi, seuls les patchnotes de la version installée sont présentés ; les anciens clients ne mémorisaient pas la dernière version lancée.
+
 ## 0.21.0 — Interface plus compacte et salons plus réactifs (2026-11-24)
 
 - Les opérations affichent un en-tête compact avec leurs effectifs. Le serveur, l’horaire, les consignes et les outils de gestion se retrouvent dans Détails ; les escouades restent visibles en dessous.

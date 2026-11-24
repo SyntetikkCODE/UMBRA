@@ -1,3 +1,4 @@
+import {dismissStartup} from './startup-test-helper.mjs';
 import {_electron as electron} from 'playwright';
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
@@ -7,7 +8,7 @@ import {RELEASE_NOTES} from '../src/release-notes.mjs';
 const root=path.resolve(import.meta.dirname,'..'),dir=await fs.mkdtemp(path.join(root,'artifacts/notes-ui-')),env={...process.env,UMBRA_DATA_DIR:dir,UMBRA_OFFLINE:'1'};delete env.ELECTRON_RUN_AS_NODE;
 const exe=process.env.UMBRA_TEST_EXE,errors=[],app=await electron.launch({...(exe?{executablePath:exe}:{}),args:[...(!exe?[root]:[]),'--disable-gpu','--use-fake-ui-for-media-stream','--use-fake-device-for-media-stream'],env});let server;
 try{
- const page=await app.firstWindow();page.on('pageerror',e=>errors.push(e.message));await page.locator('#auth-form').waitFor();await page.locator('#auth-name').fill('NotesReader');await page.locator('#auth-password').fill('notes-only-test-password');await page.locator('#auth-form [type=submit]').click();await page.locator('#tour-skip').click();
+ const page=await app.firstWindow();page.on('pageerror',e=>errors.push(e.message));await page.locator('#auth-form').waitFor();await page.locator('#auth-name').fill('NotesReader');await page.locator('#auth-password').fill('notes-only-test-password');await page.locator('#auth-form [type=submit]').click();await page.locator('#tour-skip').click();await dismissStartup(page);
  const before=(await page.evaluate(()=>window.desktop.load())).state;
  await page.locator('[data-nav=settings]').click();const tab=page.locator('[data-action=settingsTab][data-tab=patchnotes]');await tab.click();assert.equal(await tab.getAttribute('aria-current'),'page');assert.equal(await page.locator('.patchnotes-release').count(),RELEASE_NOTES.length);assert.deepEqual(await page.locator('[data-release]').evaluateAll(els=>els.map(el=>el.dataset.release)),RELEASE_NOTES.map(r=>r.version));assert.equal(await page.locator('.patchnotes-release[open]').count(),1);assert.match(await page.locator('.patchnotes-installed').textContent(),new RegExp(RELEASE_NOTES[0].version.replaceAll('.','\\.')));assert.match(await page.locator('.patchnotes-history').textContent(),/regroupés/);
  await page.locator('#notes-prototypes summary').click();assert.ok(await page.locator('#notes-prototypes').evaluate(el=>el.open));assert.match(await page.locator('#notes-prototypes .patchnotes-content').textContent(),/organisation sur le PC/);await page.locator('#notes-0-6-0 summary').focus();await page.keyboard.press('Enter');assert.ok(await page.locator('#notes-0-6-0').evaluate(el=>el.open));

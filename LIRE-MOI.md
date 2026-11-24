@@ -1,10 +1,12 @@
-# HEXAGONE 0.21.0 — Wardogs Companion
+# HEXAGONE 0.21.1 — Wardogs Companion
 
 Téléchargement officiel : https://hexagone.lotus-order.fr/
 
 - Liste des vocaux : clique sur ta squad pour te connecter directement. Les admins peuvent visiter toutes les squads ; l’accueil est ouvert à toute l’équipe. Sans accès à une squad, le clic ouvre sa fiche.
 - Réglages → Voix & vidéo : diagnostic en direct, périphériques, tests micro et caméra.
-- Panneau vocal en bas à gauche : micro, son, caméra et partage. Les réglages, le guide et la déconnexion du compte sont regroupés près du profil. Les salons textuels peuvent être repliés.
+- Panneau vocal en bas à gauche : micro, son, caméra et partage. Le guide et les réglages sont près du profil ; la déconnexion du compte est dans Réglages → Mon compte. Les salons textuels peuvent être repliés.
+- À la connexion, les patchs manqués apparaissent dans une fenêtre centrale. Sans nouveauté, elle reste masquée. Au premier passage depuis l’ajout du suivi, seul le patch actuel est présenté.
+- Une présentation de l’overlay vocal apparaît une fois par compte sur ce PC. Son bouton ouvre directement Réglages → Voix & vidéo → Overlay vocal ; l’activation reste facultative.
 - Le sélecteur de partage sépare Applications et Écran entier. Applications s’ouvre par défaut ; choisis explicitement une source avant de partager. Le son de Windows est optionnel. Les médias restent dans le vocal actuel et s’arrêtent à sa sortie ou lors d’un déplacement.
 - Clique sur En direct ou sur l’icône caméra près du pseudo pour regarder le flux. Chaque membre du vocal peut partager ; les autres flux ne sont pas chargés automatiquement.
 - Escouades → Modèles : enregistrer une composition sans joueurs et la réutiliser. Les modèles restent sur ce PC, par compte et serveur.

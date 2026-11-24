@@ -1,3 +1,4 @@
+import {dismissStartup} from './startup-test-helper.mjs';
 import assert from 'node:assert/strict';
 import {_electron as electron} from 'playwright';
 import fs from 'node:fs/promises';
@@ -21,7 +22,7 @@ try{
  const executablePath=process.env.UMBRA_TEST_EXE;app=await electron.launch({...(executablePath?{executablePath}:{}),args:[...(!executablePath?[root]:[]),'--use-fake-ui-for-media-stream','--use-fake-device-for-media-stream'],env});
  const page=await app.firstWindow(),errors=[];page.on('pageerror',e=>errors.push(e.message));
  const placement=await app.evaluate(({BrowserWindow,screen})=>{const bounds=BrowserWindow.getAllWindows()[0].getBounds(),primary=screen.getPrimaryDisplay().id,display=screen.getDisplayMatching(bounds);return {right:display.id!==primary&&display.bounds.x>0};});assert.equal(placement.right,true);
- await page.locator('#auth-name').fill('VoiceDiagnostic');await page.locator('#auth-password').fill('diagnostic-password');await page.locator('[name=joinCode]').fill('diagnostic');await page.locator('#auth-form [type=submit]').click();await page.locator('#tour-skip').click();
+ await page.locator('#auth-name').fill('VoiceDiagnostic');await page.locator('#auth-password').fill('diagnostic-password');await page.locator('[name=joinCode]').fill('diagnostic');await page.locator('#auth-form [type=submit]').click();await page.locator('#tour-skip').click();await dismissStartup(page);
  await app.evaluate(({ipcMain})=>{ipcMain.removeHandler('voice:visit');ipcMain.handle('voice:visit',async()=>{await new Promise(r=>setTimeout(r,700));throw Error('Salon inaccessible pour ce test');});});
  await page.locator('#channel-rail [data-action=voiceLobby]').click();await page.waitForFunction(()=>document.querySelector('[data-voice-status]')?.textContent==='Connexion…');
  await page.waitForFunction(()=>document.querySelector('[data-voice-error]')?.textContent.includes('Salon inaccessible'));await pause(4700);assert.match(await page.locator('[data-voice-error]').textContent(),/Salon inaccessible/);

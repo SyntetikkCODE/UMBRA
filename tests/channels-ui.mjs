@@ -1,3 +1,4 @@
+import {dismissStartup} from './startup-test-helper.mjs';
 import {_electron as electron} from 'playwright';
 import fs from 'node:fs/promises';
 import path from 'node:path';
@@ -10,7 +11,7 @@ async function until(fn,label){const end=Date.now()+15000;while(Date.now()<end){
 async function client(name){
  const env={...process.env,UMBRA_DATA_DIR:path.join(dir,name),UMBRA_SERVER_URL:'http://127.0.0.1:'+api.port};delete env.ELECTRON_RUN_AS_NODE;delete env.UMBRA_OFFLINE;
  const executablePath=process.env.UMBRA_TEST_EXE,app=await electron.launch({...(executablePath?{executablePath}:{}),args:executablePath?[]:[root],env});apps.push(app);const page=await app.firstWindow();page.on('pageerror',e=>errors.push(e.message));await page.locator('#auth-form').waitFor();
- if(await page.getByRole('heading',{name:'Se connecter'}).count())await page.locator('[data-action=auth-mode]').click();await page.locator('#auth-name').fill(name);await page.locator('#auth-password').fill('text-ui-password');await page.locator('[name=joinCode]').fill('text-test');await page.locator('#auth-form [type=submit]').click();await page.locator('#tour').waitFor();await page.locator('#tour-skip').click();await page.locator('#tour').waitFor({state:'detached'});await page.evaluate(()=>{window.__pingAudioCount=0;const Audio=window.AudioContext;window.AudioContext=new Proxy(Audio,{construct(Target,args){window.__pingAudioCount++;const context=new Target(...args);context.suspend();return context;}});});return {app,page,name};
+ if(await page.getByRole('heading',{name:'Se connecter'}).count())await page.locator('[data-action=auth-mode]').click();await page.locator('#auth-name').fill(name);await page.locator('#auth-password').fill('text-ui-password');await page.locator('[name=joinCode]').fill('text-test');await page.locator('#auth-form [type=submit]').click();await page.locator('#tour').waitFor();await page.locator('#tour-skip').click();await dismissStartup(page);await page.locator('#tour').waitFor({state:'detached'});await page.evaluate(()=>{window.__pingAudioCount=0;const Audio=window.AudioContext;window.AudioContext=new Proxy(Audio,{construct(Target,args){window.__pingAudioCount++;const context=new Target(...args);context.suspend();return context;}});});return {app,page,name};
 }
 async function send(c,text){await pause(1400);await c.page.locator('#chat-compose').fill(text);await c.page.locator('#chat-form [type=submit]').click();await until(()=>c.page.evaluate(async text=>{const id=document.querySelector('.rail-text.active').dataset.chatSelect;return (await window.desktop.chat('messages',{channelId:id})).messages.some(m=>m.text===text);},text),'Message sent');}
 try{
