@@ -80,7 +80,7 @@ export class ChannelsView {
    else if(target.hasAttribute('data-chat-link')){e.preventDefault();this.bridge.chat('openLink',{url:target.href}).catch(this.error);}
    else if(target.classList.contains('chat-spoiler'))target.classList.toggle('revealed');
   };page.onkeydown=e=>{if(e.target.classList.contains('chat-spoiler')&&['Enter',' '].includes(e.key)){e.preventDefault();e.target.classList.toggle('revealed');}};
-  page.querySelector('#chat-file-input')?.addEventListener('change',e=>this.addFiles(e.target.files));document.querySelector('[data-chat-older]')?.addEventListener('click',()=>this.load(true));
+  const fileInput=page.querySelector('#chat-file-input'),older=document.querySelector('[data-chat-older]');if(fileInput)fileInput.onchange=e=>this.addFiles(e.target.files);if(older)older.onclick=()=>this.load(true);
   this.observer=new IntersectionObserver(entries=>{for(const entry of entries)if(entry.isIntersecting){this.observer.unobserve(entry.target);this.mountMedia(entry.target);}},{root:log,rootMargin:'100px'});
   for(const el of page.querySelectorAll('[data-media-id]')){if(this.media.has(el.dataset.mediaId))this.mountMedia(el);else if(el.dataset.mediaType.startsWith('image/'))this.observer.observe(el);}this.renderPopup();
  }

@@ -1,4 +1,4 @@
-# HEXAGONE 0.20.0 — Wardogs Companion
+# HEXAGONE 0.21.0 — Wardogs Companion
 
 Téléchargement officiel : https://hexagone.lotus-order.fr/
 

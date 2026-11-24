@@ -2,6 +2,14 @@
 // Early prototypes are grouped because their individual release logs were not retained.
 export const HISTORY_NOTE='Historique reconstitué à partir des archives et des versions conservées. Les prototypes 0.1 à 0.3.1 sont regroupés ; les versions suivantes sont détaillées séparément. Les notes décrivent les changements de chaque époque, pas uniquement le fonctionnement actuel.';
 export const RELEASE_NOTES=[
+ {version:'0.21.0',title:'Interface plus compacte et salons plus réactifs',date:'2026-11-24',changes:[
+  'Les opérations affichent un en-tête compact avec leurs effectifs. Le serveur, l’horaire, les consignes et les outils de gestion se retrouvent dans Détails ; les escouades restent visibles en dessous.',
+  'Cartes d’escouades restructurées : noms et effectifs plus lisibles, postes disponibles regroupés, accès rapide au vocal et menu de gestion discret.',
+  'Les salons textuels, y compris ceux des escouades, se rangent par glisser-déposer. L’ordre est personnel, conservé par compte et serveur sur ce PC ; les salons épinglés restent en tête et se rangent entre eux.',
+  'Le glisser-déposer indique la position d’insertion et anime le déplacement des voisins. Les menus, détails et arrivées ou départs en vocal utilisent des animations courtes, désactivées avec la réduction des animations de Windows.',
+  'Les actions en attente affichent un retour immédiat sur le bouton utilisé. Les anneaux et pseudos vocaux changent progressivement de couleur.',
+  'Les synchronisations mettent à jour les éléments modifiés au lieu de remplacer toute l’interface. Les listes, discussions, brouillons, médias et positions de lecture sont conservés ; les éléments de l’overlay restent également en place pendant la prise de parole.'
+ ]},
  {version:'0.20.0',title:'Radio opération et gestion des escouades',date:'2026-11-23',changes:[
   'Les leaders extérieurs apparaissent dans l’overlay sous le nom de leur salon, séparément des joueurs de ton vocal.',
   'Annonce générale devient Opération : seuls les joueurs des escouades inscrites à la même opération s’entendent. Ce canal suit l’inscription de ton escouade, y compris dans l’accueil. Sans opération, il est désactivé.',

@@ -1,6 +1,7 @@
 import {escapeText} from './message-format.mjs';
+import {ChannelOrder} from './channel-order.mjs';
 export class ChannelMenu {
- constructor(options){this.options=options;document.addEventListener('contextmenu',e=>{const row=e.target.closest('[data-chat-select]');if(!row)return;e.preventDefault();this.open(row.dataset.chatSelect,e.clientX,e.clientY,row);});
+ constructor(options){this.options=options;this.order=new ChannelOrder(options.key);document.addEventListener('contextmenu',e=>{const row=e.target.closest('[data-chat-select]');if(!row)return;e.preventDefault();this.open(row.dataset.chatSelect,e.clientX,e.clientY,row);});
   document.addEventListener('keydown',e=>{if(this.element){if(e.key==='Escape'){e.preventDefault();this.close(true);}else if(['ArrowDown','ArrowUp','Home','End','Tab'].includes(e.key)){e.preventDefault();const items=[...this.element.querySelectorAll('button:not(:disabled)')],at=items.indexOf(document.activeElement),next=e.key==='Home'?0:e.key==='End'?items.length-1:(at+(e.key==='ArrowUp'?-1:1)+items.length)%items.length;items[next]?.focus();}return;}
    if(e.key==='ContextMenu'||e.key==='F10'&&e.shiftKey){const row=document.activeElement?.closest('[data-chat-select]');if(row){e.preventDefault();const rect=row.getBoundingClientRect();this.open(row.dataset.chatSelect,rect.right,rect.top,row);}}
   });
@@ -8,7 +9,8 @@ export class ChannelMenu {
  }
  pins(){try{const items=JSON.parse(localStorage.getItem('umbra-channel-pins:'+this.options.key())||'[]');return Array.isArray(items)?items.filter(id=>typeof id==='string').slice(0,100):[];}catch{return [];}}
  isPinned(id){return this.pins().includes(id);}
- ordered(channels){const pins=this.pins();return [...channels].sort((a,b)=>{const ai=pins.indexOf(a.id),bi=pins.indexOf(b.id);return (ai<0?1000:ai)-(bi<0?1000:bi);});}
+ ordered(channels){return this.order.ordered(channels,this.pins());}
+ move(id,target,after){this.order.move(this.options.channels(),id,target,after);this.options.changed();}
  togglePin(id){const pins=this.pins(),next=pins.includes(id)?pins.filter(value=>value!==id):[id,...pins];localStorage.setItem('umbra-channel-pins:'+this.options.key(),JSON.stringify(next.slice(0,100)));this.options.changed();}
  reconcile(){if(!this.element)return;const c=this.options.channels().find(c=>c.id===this.id);if(!c||JSON.stringify([c.name,c.canEdit,c.canDuplicate,c.canDelete])!==this.signature)this.close();}
  close(restore=false){const anchor=this.anchor?.isConnected?this.anchor:[...document.querySelectorAll('[data-chat-select]')].find(row=>row.dataset.chatSelect===this.id);this.element?.remove();this.element=null;if(restore)anchor?.focus();this.anchor=null;this.anchorRect=null;this.id=null;}

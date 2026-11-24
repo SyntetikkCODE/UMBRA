@@ -4,6 +4,15 @@ Historique reconstitué à partir des archives et des versions conservées. Les 
 
 [Application et téléchargement](https://hexagone.lotus-order.fr/) · [Historique sur le site](https://hexagone.lotus-order.fr/patchnotes/)
 
+## 0.21.0 — Interface plus compacte et salons plus réactifs (2026-11-24)
+
+- Les opérations affichent un en-tête compact avec leurs effectifs. Le serveur, l’horaire, les consignes et les outils de gestion se retrouvent dans Détails ; les escouades restent visibles en dessous.
+- Cartes d’escouades restructurées : noms et effectifs plus lisibles, postes disponibles regroupés, accès rapide au vocal et menu de gestion discret.
+- Les salons textuels, y compris ceux des escouades, se rangent par glisser-déposer. L’ordre est personnel, conservé par compte et serveur sur ce PC ; les salons épinglés restent en tête et se rangent entre eux.
+- Le glisser-déposer indique la position d’insertion et anime le déplacement des voisins. Les menus, détails et arrivées ou départs en vocal utilisent des animations courtes, désactivées avec la réduction des animations de Windows.
+- Les actions en attente affichent un retour immédiat sur le bouton utilisé. Les anneaux et pseudos vocaux changent progressivement de couleur.
+- Les synchronisations mettent à jour les éléments modifiés au lieu de remplacer toute l’interface. Les listes, discussions, brouillons, médias et positions de lecture sont conservés ; les éléments de l’overlay restent également en place pendant la prise de parole.
+
 ## 0.20.0 — Radio opération et gestion des escouades (2026-11-23)
 
 - Les leaders extérieurs apparaissent dans l’overlay sous le nom de leur salon, séparément des joueurs de ton vocal.
