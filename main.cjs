@@ -101,7 +101,7 @@ app.whenReady().then(async () => {
   handle('updates:check',()=>updates.check());
   handle('updates:install',()=>updates.install());
   handle('auth:status', async()=>remote?{...await remote.request('health'),shared:true,baseUrl:remote.base}:{...accounts.status(),shared:false});
-  handle('text:copy',text=>{if(typeof text!=='string'||text.length>20000)throw new Error('Texte invalide.');clipboard.writeText(text);return true;});
+  handle('text:copy',text=>{if(typeof text!=='string'||text.length>65536)throw new Error('Texte invalide.');clipboard.writeText(text);return true;});
   handle('notifications:badge',value=>require('./src/taskbar-badge.cjs').setTaskbarBadge(win,nativeImage,value));
   handle('auth:register',credentials=>authenticate('register',credentials));
   handle('auth:login',credentials=>authenticate('login',credentials));

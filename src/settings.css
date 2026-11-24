@@ -6,3 +6,5 @@
 @media(max-width:1250px){.settings-layout{grid-template-columns:145px minmax(0,1fr);gap:18px}.settings-nav button{padding:12px 8px;font-size:10px}.settings-body .panel-body{padding:20px}.audio-columns{gap:15px}}
 @media(max-width:1150px){.settings-layout{grid-template-columns:1fr}.settings-nav{position:static;grid-template-columns:repeat(4,1fr);border-bottom:1px solid #2d2d2d;padding-bottom:12px}.settings-nav button{justify-content:center}.settings-nav .icon{display:none}}
 @media(prefers-reduced-motion:reduce){.switch-track,.switch-track:after{transition:none}}
+
+.reception-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:18px 0 10px}.reception-tools .btn{font-size:11px}.reception-tools [role=status]{font-size:10px;color:#929eaf}.reception-table-wrap{overflow:auto;border:1px solid #343c4b;border-radius:5px}.reception-table{font-size:11px}.reception-table small{display:block;color:#8b97aa;font-size:9px;margin-top:4px}.reception-table .reception-warning{color:#f08b95}.player-context-menu button:disabled{opacity:.4;cursor:default}.player-context-menu button:disabled:hover{background:transparent;color:#ccc}

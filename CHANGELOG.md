@@ -4,6 +4,13 @@ Historique reconstitué à partir des archives et des versions conservées. Les 
 
 [Application et téléchargement](https://hexagone.lotus-order.fr/) · [Historique sur le site](https://hexagone.lotus-order.fr/patchnotes/)
 
+## 0.21.2 — Diagnostic de réception et relance audio par joueur (2026-11-24)
+
+- Dans Réglages → Voix & vidéo → Diagnostic vocal, Analyser la réception mesure les voix par joueur et canal, le gain appliqué, les erreurs de sortie et les pertes réseau. Faites parler les joueurs concernés pendant la mesure.
+- Le diagnostic se copie pour comparer deux auditeurs. Aucun son n’est enregistré et rien n’est envoyé automatiquement ; les mesures s’arrêtent avant le volume Windows et le casque.
+- Clic droit sur un joueur → Relancer son audio reconstruit uniquement sa lecture sur les canaux vocaux reçus. Le vocal et les autres joueurs restent connectés ; les volumes, choix d’oreille et préférences sont conservés.
+- Les échecs de sélection d’une sortie audio et les lectures bloquées sont signalés pour le joueur concerné, au lieu d’être ignorés. La sortie est sélectionnée avant de démarrer la lecture.
+
 ## 0.21.1 — Nouveautés à la connexion et découverte de l’overlay (2026-11-24)
 
 - À la connexion, une fenêtre centrale regroupe les patchs publiés depuis la dernière version consultée, y compris si plusieurs mises à jour ont été sautées. Sans nouveauté, elle ne s’affiche pas.

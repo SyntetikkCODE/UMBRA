@@ -1,3 +1,4 @@
+import {playReceived} from './received-playback.mjs';
 import {Room,RoomEvent,LocalAudioTrack,LocalVideoTrack,Track,AudioPresets} from '../assets/livekit.mjs';
 import {rmsLevel,createVoiceGate,thresholdAmplitude,updateMicMeter} from './activity.mjs';
 import {audioSettings,microphoneGraph,playbackVolume,primaryDestination,captureOptions} from './audio.mjs';
@@ -15,7 +16,7 @@ export class VoiceClient {
   this.bridge=bridge;this.changed=changed;this.enabled=false;this.connecting=false;this.rooms=new Map();this.stream=null;this.audioContext=null;this.frame=null;this.queue=Promise.resolve();this.txQueue=Promise.resolve();this.transmitting=null;this.speaking=false;this.error='';this.muted=false;this.deafened=false;
   this.networkDown=false;this.keys={primary:'F8',leaders:'F9',broadcast:'F10'};this.mode='vad';this.nativeHeld={};this.pointerHeld={};this.settings=audioSettings();this.hooksStarted=false;
   this.voiceDetected=false;this.graph=null;this.sounds=new VoiceSounds();this.lastDestination=null;this.presenceInitialized=false;this.presencePeers=new Set();this.onDeviceRecovery=async()=>{};
-  this.participantVolumes=new ParticipantVolumes();
+  this.participantVolumes=new ParticipantVolumes();this.repairTasks=new Map();
   this.streamAudioPreferences=new StreamAudioPreferences();this.streamDucking=false;
   this.screenQuality='720p';try{const saved=localStorage.getItem('umbra-screen-quality');if(saved)this.screenQuality=screenQuality(saved).id;}catch{}
    this.keyLabels={};this.capturingKey=false;this.bindings=[];this.mediaBusy=false;this.mediaTracks=new Map();this.watching=new Set();this.cameraDevice='';this.lastLevelDb=null;this.onShortcut=()=>{};
@@ -80,8 +81,7 @@ export class VoiceClient {
     room.on(RoomEvent.TrackSubscribed,(track,publication,participant)=>{
      if(!this.enabled||this.rooms.get(c.kind)!==entry)return;
      if(track.kind===Track.Kind.Video){if(c.kind==='primary')this.addVisualTrack(track,publication,participant);return;}
-     if(track.kind!==Track.Kind.Audio||!this.audioContext)return;const attached=track.attach();attached.muted=true;attached.volume=0;attached.hidden=true;document.body.append(attached);
-     const graph=receivedAudioGraph(this.audioContext,track.mediaStreamTrack,publication.source===Track.Source.Microphone),element=document.createElement('audio');element.srcObject=graph.stream;element.dataset.voiceKind=c.kind;element.dataset.voiceParticipant=participant.identity;element.dataset.voiceSource=publication.source;element.autoplay=true;element.hidden=true;document.body.append(element);entry.elements.add(element);entry.received.set(track,{graph,element,attached,source:publication.source,gate:createVoiceGate()});this.applyVolumes();if(element.setSinkId)element.setSinkId(this.settings.output||'').catch(()=>{});element.play().catch(()=>{this.error='Clique sur Activer le son pour autoriser la lecture.';this.notify();});
+     if(track.kind!==Track.Kind.Audio||!this.audioContext)return;this.attachReceived(entry,track,publication.source,participant.identity,participant.name);
     });
     room.on(RoomEvent.TrackUnsubscribed,track=>{this.removeVisualTrack(track);const received=entry.received.get(track);if(received){received.graph.close();received.element.pause();received.element.srcObject=null;received.element.remove();entry.elements.delete(received.element);entry.received.delete(track);}for(const el of track.detach())el.remove();});
     if(c.kind==='primary'){
@@ -102,8 +102,8 @@ export class VoiceClient {
    }
    if(!this.hooksStarted){await this.bridge.pttStart(this.shortcutKeys);this.hooksStarted=true;}
    await Promise.all([...this.rooms.values()].map(e=>e.room.switchActiveDevice('audiooutput',this.settings.output||'')));
-   await Promise.all([...this.rooms.values()].flatMap(e=>[...e.elements].filter(el=>el.setSinkId).map(el=>el.setSinkId(this.settings.output||''))));
-   await this.applyTransmit();await this.bridge.voicePresence();if([...this.rooms.values()].some(e=>e.room.state!=='connected'))throw new Error('Reconnexion au vocal…');this.applyAudioSettings();this.error='';
+   await Promise.all([...this.rooms.values()].flatMap(e=>[...e.received].map(([track,r])=>playReceived(this,e,track,r))));
+   await this.applyTransmit();await this.bridge.voicePresence();if([...this.rooms.values()].some(e=>e.room.state!=='connected'))throw new Error('Reconnexion au vocal…');this.applyAudioSettings();this.error=[...this.rooms.values()].flatMap(e=>[...e.received.values()]).find(r=>r.error)?.error||'';
    const destination=primaryDestination(this.rooms.get('primary')?.channel);
    if(destination!==this.lastDestination){const sound=this.lastDestination?'move':'join';this.lastDestination=destination;this.presenceInitialized=false;this.sounds.play(sound);}
    if(this.lastPresence)this.observePresence(this.lastPresence.users,this.lastPresence.selfId);
@@ -175,10 +175,24 @@ export class VoiceClient {
   if(active!==this.streamDucking){this.streamDucking=active;this.applyVolumes();}
  }
  applyVolumes(){
-  const leadersActive=this.rooms.get('leaders')?.room.activeSpeakers.some(p=>p.identity!==this.rooms.get('leaders')?.room.localParticipant.identity);
+  const leadersActive=!!this.rooms.get('leaders')?.room.activeSpeakers.some(p=>p.identity!==this.rooms.get('leaders')?.room.localParticipant.identity);this.leadersDucking=!!leadersActive&&this.settings.ducking;
   const output=kind=>kind==='stream'?(this.deafened?0:this.settings.outputVolume/100):playbackVolume(kind,this.settings,{deafened:this.deafened,leadersActive});
   for(const[k,e]of this.rooms)for(const el of e.elements)el.volume=splitOutputGain(output(el.dataset.voiceSource===Track.Source.ScreenShareAudio?'stream':k)).volume;
   for(const [kind,e] of this.rooms)for(const received of e.received?.values()||[]){received.graph.setEar(this.settings[kind+'Ear']||'both');const id=received.element.dataset.voiceParticipant,isStream=received.source===Track.Source.ScreenShareAudio,gain=(isStream?streamGain(this.streamAudio(id),this.streamDucking):this.participantVolume(id)/100)*splitOutputGain(output(isStream?'stream':kind)).boost;received.graph.gain.gain.setTargetAtTime(gain,this.audioContext.currentTime,isStream?.08:.015);received.element.dataset.participantGain=String(gain);}
+ }
+ attachReceived(entry,track,source,id,name){
+  // Explicit fresh elements avoid inheriting a recycled SDK element's state.
+  const attached=document.createElement('audio');attached.muted=true;attached.volume=0;attached.hidden=true;track.attach(attached);attached.muted=true;attached.volume=0;document.body.append(attached);
+  const graph=receivedAudioGraph(this.audioContext,track.mediaStreamTrack,source===Track.Source.Microphone),element=document.createElement('audio');element.srcObject=graph.stream;element.dataset.voiceKind=entry.channel.kind;element.dataset.voiceParticipant=id;element.dataset.voiceSource=source;element.autoplay=true;element.hidden=true;document.body.append(element);
+  const received={graph,element,attached,source,name,gate:createVoiceGate(),error:'',outputError:null,playError:null};entry.elements.add(element);entry.received.set(track,received);this.applyVolumes();received.ready=playReceived(this,entry,track,received);return received;
+ }
+ canRepairParticipant(id){return this.enabled&&[...this.rooms.values()].some(e=>[...e.received.values()].some(r=>r.source===Track.Source.Microphone&&r.element.dataset.voiceParticipant===id));}
+ repairParticipant(id){if(this.repairTasks.has(id))return this.repairTasks.get(id);const task=this.repairParticipantNow(id);this.repairTasks.set(id,task);task.finally(()=>{if(this.repairTasks.get(id)===task)this.repairTasks.delete(id);}).catch(()=>{});return task;}
+ async repairParticipantNow(id){
+  if(!this.enabled||!this.audioContext)throw new Error('Rejoins un vocal avant de relancer l’écoute.');await this.audioContext.resume();let count=0;
+  const jobs=[...this.rooms.values()].flatMap(entry=>[...entry.received].filter(([,r])=>r.source===Track.Source.Microphone&&r.element.dataset.voiceParticipant===id).map(([track,r])=>({entry,track,r})));
+  for(const {entry,track,r}of jobs){if(!this.enabled||entry.received.get(track)!==r||track.mediaStreamTrack.readyState!=='live')continue;entry.received.delete(track);entry.elements.delete(r.element);r.graph.close();r.element.pause();r.element.srcObject=null;r.element.remove();track.detach(r.attached);r.attached.remove();const next=this.attachReceived(entry,track,r.source,id,r.name);if(await next.ready){if(this.error===r.error)this.error='';count++;}}
+  if(!count)throw new Error(this.error||'Aucune voix disponible pour ce joueur.');this.notify();return count;
  }
  observePresence(users,selfId){
   this.lastPresence={users,selfId};
@@ -189,7 +203,7 @@ export class VoiceClient {
    if(this.presenceInitialized&&!this.connecting&&destination===this.lastDestination&&[...this.presencePeers].some(id=>!peers.has(id)))this.sounds.play('leave');
   this.presencePeers=peers;this.presenceInitialized=true;
  }
- async startAudio(){await this.audioContext?.resume();await Promise.all([...this.rooms.values()].map(e=>e.room.startAudio()));for(const e of this.rooms.values()){for(const received of e.received?.values()||[])received.attached.muted=true;await Promise.all([...e.elements].map(el=>el.play()));}this.error='';this.notify();}
+ async startAudio(){await this.audioContext?.resume();await Promise.all([...this.rooms.values()].map(e=>e.room.startAudio()));for(const e of this.rooms.values()){for(const received of e.received.values()){received.attached.muted=true;received.attached.volume=0;}await Promise.all([...e.received].map(([track,r])=>playReceived(this,e,track,r)));}this.notify();}
  async clearMedia(){
   await this.stopVisualMedia();this.lastLevelDb=null;
   if(this.frame)clearInterval(this.frame);this.frame=null;
