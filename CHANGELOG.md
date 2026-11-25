@@ -4,6 +4,13 @@ Historique reconstitué à partir des archives et des versions conservées. Les 
 
 [Application et téléchargement](https://hexagone.lotus-order.fr/) · [Historique sur le site](https://hexagone.lotus-order.fr/patchnotes/)
 
+## 0.21.3 — Salon de briefing visible dans les vocaux (2026-11-25)
+
+- Rassembler une squad fait apparaître un salon Briefing · nom de l’opération dans l’arborescence, au-dessus des squads de cette opération.
+- Les joueurs présents au briefing sont regroupés sous ce salon, avec leur activité vocale. Ils ne restent plus affichés simultanément sous leur vocal de squad.
+- Le salon est mis en évidence avec la mention Connecté quand tu y es. L’arborescence le rend visible à ton arrivée, sans déplacer la page centrale. Son compteur suit les joueurs présents ; il disparaît à la fin du briefing.
+- Les membres des squads rassemblées et les admins peuvent rejoindre le briefing par clic. Les admins peuvent aussi y déplacer un joueur par glisser-déposer.
+
 ## 0.21.2 — Diagnostic de réception et relance audio par joueur (2026-11-24)
 
 - Dans Réglages → Voix & vidéo → Diagnostic vocal, Analyser la réception mesure les voix par joueur et canal, le gain appliqué, les erreurs de sortie et les pertes réseau. Faites parler les joueurs concernés pendant la mesure.

@@ -2,6 +2,12 @@
 // Early prototypes are grouped because their individual release logs were not retained.
 export const HISTORY_NOTE='Historique reconstitué à partir des archives et des versions conservées. Les prototypes 0.1 à 0.3.1 sont regroupés ; les versions suivantes sont détaillées séparément. Les notes décrivent les changements de chaque époque, pas uniquement le fonctionnement actuel.';
 export const RELEASE_NOTES=[
+ {version:'0.21.3',title:'Salon de briefing visible dans les vocaux',date:'2026-11-25',changes:[
+  'Rassembler une squad fait apparaître un salon Briefing · nom de l’opération dans l’arborescence, au-dessus des squads de cette opération.',
+  'Les joueurs présents au briefing sont regroupés sous ce salon, avec leur activité vocale. Ils ne restent plus affichés simultanément sous leur vocal de squad.',
+  'Le salon est mis en évidence avec la mention Connecté quand tu y es. L’arborescence le rend visible à ton arrivée, sans déplacer la page centrale. Son compteur suit les joueurs présents ; il disparaît à la fin du briefing.',
+  'Les membres des squads rassemblées et les admins peuvent rejoindre le briefing par clic. Les admins peuvent aussi y déplacer un joueur par glisser-déposer.'
+ ]},
  {version:'0.21.2',title:'Diagnostic de réception et relance audio par joueur',date:'2026-11-24',changes:[
   'Dans Réglages → Voix & vidéo → Diagnostic vocal, Analyser la réception mesure les voix par joueur et canal, le gain appliqué, les erreurs de sortie et les pertes réseau. Faites parler les joueurs concernés pendant la mesure.',
   'Le diagnostic se copie pour comparer deux auditeurs. Aucun son n’est enregistré et rien n’est envoyé automatiquement ; les mesures s’arrêtent avant le volume Windows et le casque.',

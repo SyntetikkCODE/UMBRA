@@ -1,7 +1,7 @@
 {
   "name": "hexagone",
   "productName": "HEXAGONE",
-  "version": "0.21.2",
+  "version": "0.21.3",
   "description": "Communications et escouades pour les équipes Wardogs",
   "author": "HEXAGONE contributors",
   "private": true,

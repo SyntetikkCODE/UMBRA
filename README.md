@@ -6,7 +6,7 @@ Projet communautaire indépendant. Aucune affiliation ou validation par l’édi
 
 ## État de cette copie
 
-Client 0.21.2 : présentation des patchs manqués à la connexion et découverte de l’overlay avec accès direct aux réglages. Le suivi est local, séparé par compte et serveur. Les anciens clients n’ayant pas mémorisé la dernière version lancée, le premier passage présente seulement le patch installé ; les suivants regroupent les versions manquées.
+Client 0.21.3 : présentation des patchs manqués à la connexion et découverte de l’overlay avec accès direct aux réglages. Le suivi est local, séparé par compte et serveur. Les anciens clients n’ayant pas mémorisé la dernière version lancée, le premier passage présente seulement le patch installé ; les suivants regroupent les versions manquées.
 
 La version 0.18.0 marque le passage d’UMBRA à HEXAGONE : nouveau nom, logo de la structure, accents bleus et rouges. Les fonctions, comptes, sessions, réglages et données existants sont conservés. Les identifiants techniques de stockage, d’installation et de mise à jour sont maintenus pour assurer cette continuité.
 
@@ -59,7 +59,7 @@ Le test médias utilise une caméra et un micro générés, capture une fenêtre
 npm run dist:unsigned
 ```
 
-Résultat : `dist/HEXAGONE-Setup-0.21.2-win64.exe`. Les licences sont générées dans le projet, sans dépendre du dossier personnel d’un développeur. Le paquet contient les sources correspondantes LGPL du hook et les notices des dépendances.
+Résultat : `dist/HEXAGONE-Setup-0.21.3-win64.exe`. Les licences sont générées dans le projet, sans dépendre du dossier personnel d’un développeur. Le paquet contient les sources correspondantes LGPL du hook et les notices des dépendances.
 
 ## Signature et mises à jour
 
