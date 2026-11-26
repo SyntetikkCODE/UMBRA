@@ -2,6 +2,13 @@
 // Early prototypes are grouped because their individual release logs were not retained.
 export const HISTORY_NOTE='Historique reconstitué à partir des archives et des versions conservées. Les prototypes 0.1 à 0.3.1 sont regroupés ; les versions suivantes sont détaillées séparément. Les notes décrivent les changements de chaque époque, pas uniquement le fonctionnement actuel.';
 export const RELEASE_NOTES=[
+ {version:'0.22.0',title:'Placement libre de l’overlay et liste des membres',date:'2026-11-26',changes:[
+  'Dans Réglages → Voix & vidéo → Overlay vocal, Déplacer librement permet de glisser l’overlay puis de valider sa position. Annuler conserve le placement précédent. Les quatre coins restent disponibles.',
+  'La position est conservée sur ce PC et ajustée aux limites de l’écran. Après le placement, l’overlay retrouve son fond transparent et laisse passer les clics.',
+  'Le bouton Membres en haut à droite ouvre ou ferme une colonne avec les personnes en ligne et hors ligne, regroupées par grade : admins, commandants, squad leaders et membres.',
+  'La colonne affiche les photos, les spécialités et le salon vocal actuel. Un clic ouvre le profil ; le clic droit conserve les options du joueur. L’ouverture et les groupes repliés sont mémorisés par compte et serveur.',
+  'La présence suit la connexion à l’app, même sans vocal. En cas de perte du serveur, elle est indiquée comme indisponible. La gestion des membres se trouve désormais dans Réglages → Membres, réservée aux admins.'
+ ]},
  {version:'0.21.3',title:'Salon de briefing visible dans les vocaux',date:'2026-11-25',changes:[
   'Rassembler une squad fait apparaître un salon Briefing · nom de l’opération dans l’arborescence, au-dessus des squads de cette opération.',
   'Les joueurs présents au briefing sont regroupés sous ce salon, avec leur activité vocale. Ils ne restent plus affichés simultanément sous leur vocal de squad.',

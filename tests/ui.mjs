@@ -25,7 +25,7 @@ try{
  await page.locator('#tour-next').click();assert.equal(await page.locator('.tour-highlight[data-nav=mine]').count(),1);
  await page.locator('#tour-prev').click();await page.locator('#tour-next').click();await page.locator('#tour-next').click();await page.locator('#tour-next').click();await page.locator('#tour-next').click();await page.locator('#tour').waitFor({state:'detached'});await dismissStartup(page);
  assert.equal(await page.locator('.squad-card').count(),0);await page.screenshot({path:path.join(artifacts,'v2-03-vide.png')});
- await page.locator('[data-nav=players]').click();assert.equal(await page.locator('.data-table tbody tr').count(),1);assert.equal(await page.locator('[data-action=addPlayer]').count(),0);
+ await page.locator('[data-nav=settings]').click();await page.locator('[data-action=settingsTab][data-tab=members]').click();assert.equal(await page.locator('.data-table tbody tr').count(),1);assert.equal(await page.locator('[data-action=addPlayer]').count(),0);
  await page.locator('[data-nav=operations]').click();await page.locator('[data-action=create]').click();
  assert.equal(await page.locator('[name=roles]').count(),0);assert.equal(await page.locator('.slot-editor').count(),1);
  assert.deepEqual(await page.locator('[data-role-select]').first().locator('option').allTextContents(),['Entry Frag','Medic','Pilote','Builders','Breacher','Recon','Driver','Launcher','Libre','Autre']);

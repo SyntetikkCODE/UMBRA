@@ -1,12 +1,13 @@
 const CORNERS=['top-left','top-right','bottom-left','bottom-right'];
-const DEFAULT_OVERLAY=Object.freeze({enabled:false,corner:'top-left',displayId:null});
+const DEFAULT_OVERLAY=Object.freeze({enabled:false,corner:'top-left',displayId:null,position:null});
 function overlaySettings(value={}){
  if(typeof value.enabled!=='boolean'||!CORNERS.includes(value.corner)||!(value.displayId===null||Number.isSafeInteger(value.displayId)))throw new Error('Réglages de l’overlay invalides.');
- return {enabled:value.enabled,corner:value.corner,displayId:value.displayId};
+ const position=value.position??null;if(position!==null&&(!Number.isSafeInteger(position.x)||!Number.isSafeInteger(position.y)||position.x<0||position.y<0||position.x>100000||position.y>100000))throw new Error('Position de l’overlay invalide.');
+ return {enabled:value.enabled,corner:value.corner,displayId:value.displayId,position:position&&{x:position.x,y:position.y}};
 }
-function overlayBounds(area,corner,rows=0,extra=0,groups=0){
+function overlayBounds(area,corner,rows=0,extra=0,groups=0,position=null){
  const margin=16,width=Math.min(230,area.width-margin*2),height=Math.min(34+Math.max(1,Math.min(rows,50))*28+(extra?18:0)+groups*25,area.height-margin*2);
- return {x:corner.endsWith('right')?area.x+area.width-width-margin:area.x+margin,y:corner.startsWith('bottom')?area.y+area.height-height-margin:area.y+margin,width,height};
+ return {x:position?area.x+Math.max(0,Math.min(position.x,area.width-width)):corner.endsWith('right')?area.x+area.width-width-margin:area.x+margin,y:position?area.y+Math.max(0,Math.min(position.y,area.height-height)):corner.startsWith('bottom')?area.y+area.height-height-margin:area.y+margin,width,height};
 }
 function overlayPayload(value={}){
  const text=(value,max)=>typeof value==='string'?value.replace(/[\x00-\x1f\x7f]/g,'').slice(0,max):'';

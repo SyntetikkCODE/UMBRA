@@ -4,3 +4,5 @@
 .overlay-group-heading{flex:0 0 25px;margin:0;padding-top:8px;font-size:11px;line-height:17px;font-weight:650;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 .speaker-avatar{transition:border-color 140ms ease}.speaker-name{transition:color 140ms ease;font-weight:650}@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important}}
+
+body.editing{pointer-events:auto;cursor:move}.editing .overlay{background:#16191fe8;border:1px dashed #85aaff;border-radius:7px;padding:7px}.editing #speakers{overflow:hidden}.editing #placement{flex:none;height:76px;text-shadow:none;cursor:default;font-size:10px}.editing #placement p{margin:9px 0}.editing #placement div{display:flex;gap:8px}.editing #placement button{background:#303744;color:#edf2fa;border:1px solid #536078;border-radius:4px;padding:6px 10px;cursor:pointer;font:inherit}.editing #placement button:first-child{background:#9bbaff;color:#101722;border-color:#9bbaff}#placement-error{font-size:9px;color:#ffb7b7}

@@ -1,6 +1,11 @@
 import {test} from 'node:test';import assert from 'node:assert/strict';import {createRequire} from 'node:module';
 import {voiceOverlayState} from '../src/overlay-state.mjs';import {splitOutputGain} from '../src/output-gain.mjs';import {audioSettings,validateAudio,playbackVolume} from '../src/audio.mjs';
 const require=createRequire(import.meta.url),{CORNERS,overlaySettings,overlayBounds,overlayPayload,overlayProfiles}=require('../src/overlay-model.cjs');
+test('Free placement migrates old preferences, validates positions and clamps on monitor or roster resize',()=>{
+ assert.equal(overlaySettings({enabled:true,corner:'top-left',displayId:null}).position,null);
+ for(const position of [{x:-1,y:1},{x:NaN,y:1},{x:1.5,y:2},{x:'2',y:3},{x:Infinity,y:0}])assert.throws(()=>overlaySettings({enabled:true,corner:'top-left',displayId:null,position}));
+ const area={x:-1600,y:-200,width:1600,height:900},position={x:800,y:300};const b=overlayBounds(area,'bottom-right',3,0,0,position);assert.equal(b.x,-800);assert.equal(b.y,100);const tall=overlayBounds(area,'top-left',50,1,2,{x:9999,y:9999});assert.equal(tall.x+tall.width,area.x+area.width);assert.equal(tall.y+tall.height,area.y+area.height);assert.deepEqual(position,{x:800,y:300});
+});
 test('Overlay avatars only accept bounded raster images, without fetching external URLs',()=>{
  const result=overlayProfiles([{id:'a',picture:'https://example.com/photo.png'},{id:'b',picture:'data:image/svg+xml;base64,PHN2Zz4='},{id:'c',picture:'data:image/png;base64,AQID'},{id:'d',picture:'data:image/png;base64,'+'A'.repeat(400000)}]);assert.deepEqual(result.map(p=>!!p.picture),[false,false,true,false]);
 });

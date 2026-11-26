@@ -1,7 +1,7 @@
 import {patchHTML,setText} from './dom-patch.mjs';
 const channel=document.querySelector('#channel'),status=document.querySelector('#status'),list=document.querySelector('#speakers');let profiles=new Map(),current=null;
 function render(value){
- current=value;setText(channel,value.label||'Vocal');setText(status,value.preview?'APERÇU':value.deafened?'Son coupé':value.muted?'Micro coupé':'');const fragment=document.createDocumentFragment();
+ current=value;document.body.classList.toggle('editing',!!value.editing);document.querySelector('#placement').hidden=!value.editing;setText(channel,value.label||'Vocal');setText(status,value.preview?'APERÇU':value.deafened?'Son coupé':value.muted?'Micro coupé':'');const fragment=document.createDocumentFragment();
  const groups=new Map();for(const speaker of value.speakers){const key=speaker.groupId||'primary';if(!groups.has(key))groups.set(key,[]);groups.get(key).push(speaker);}
  for(const [id,players]of [...groups].sort(([a],[b])=>a==='primary'?-1:b==='primary'?1:0)){if(id!=='primary'){const heading=document.createElement('h3');heading.className='overlay-group-heading';heading.dataset.overlayGroup=id;heading.textContent=players[0].groupLabel||'Vocal';fragment.append(heading);}
  for(const speaker of players){const row=document.createElement('div');row.className='speaker'+(speaker.speaking?' is-speaking':'');row.dataset.domKey=id+':'+speaker.id;row.dataset.channel=speaker.channel;row.dataset.groupId=id;const avatar=document.createElement('span');avatar.className='speaker-avatar';const picture=profiles.get(speaker.id);if(picture){const img=document.createElement('img');img.src=picture;img.alt='';avatar.append(img);}else avatar.textContent=speaker.name.slice(0,2).toUpperCase();const name=document.createElement('span');name.className='speaker-name';name.textContent=speaker.name;const tag=document.createElement('span');tag.className='speaker-channel';tag.textContent=({primary:'',leaders:'Leaders',broadcast:'Opération'})[speaker.channel];row.append(avatar,name,tag);fragment.append(row);}}
@@ -10,3 +10,9 @@ function render(value){
  patchHTML(list,[...fragment.children].map(n=>n.outerHTML).join(''));
 }
 window.voiceOverlay.onProfiles(value=>{profiles=new Map(value.map(p=>[p.id,p.picture]));if(current)render(current);});window.voiceOverlay.onUpdate(render);
+let pointer=null,starting=Promise.resolve();
+document.addEventListener('pointerdown',event=>{if(!current?.editing||event.button!==0||event.target.closest('button'))return;event.preventDefault();pointer=event.pointerId;document.body.setPointerCapture(pointer);starting=window.voiceOverlay.dragStart();});
+document.addEventListener('pointermove',event=>{if(pointer===event.pointerId)starting.then(()=>window.voiceOverlay.dragMove());});
+for(const type of ['pointerup','pointercancel'])document.addEventListener(type,event=>{if(pointer!==event.pointerId)return;pointer=null;starting.then(()=>window.voiceOverlay.dragEnd());});
+document.querySelector('#placement').addEventListener('click',async event=>{const button=event.target.closest('[data-placement]');if(!button)return;try{await window.voiceOverlay.finish(button.dataset.placement==='save');}catch{document.querySelector('#placement-error').textContent='Enregistrement impossible. Réessaie.';}});
+document.addEventListener('keydown',event=>{if(current?.editing&&event.key==='Escape')window.voiceOverlay.finish(false);});

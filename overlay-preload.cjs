@@ -1,2 +1,2 @@
 const {contextBridge,ipcRenderer}=require('electron');
-contextBridge.exposeInMainWorld('voiceOverlay',{onProfiles(callback){ipcRenderer.on('voice-overlay:profiles',(_event,value)=>callback(value));},onUpdate(callback){ipcRenderer.on('voice-overlay:render',(_event,value)=>callback(value));}});
+contextBridge.exposeInMainWorld('voiceOverlay',{dragStart:()=>ipcRenderer.invoke('overlay:drag-start'),dragMove:()=>ipcRenderer.send('overlay:drag-move'),dragEnd:()=>ipcRenderer.send('overlay:drag-end'),finish:commit=>ipcRenderer.invoke('overlay:finish',commit),onProfiles(callback){ipcRenderer.on('voice-overlay:profiles',(_event,value)=>callback(value));},onUpdate(callback){ipcRenderer.on('voice-overlay:render',(_event,value)=>callback(value));}});

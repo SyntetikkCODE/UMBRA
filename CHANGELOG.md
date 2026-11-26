@@ -4,6 +4,14 @@ Historique reconstitué à partir des archives et des versions conservées. Les 
 
 [Application et téléchargement](https://hexagone.lotus-order.fr/) · [Historique sur le site](https://hexagone.lotus-order.fr/patchnotes/)
 
+## 0.22.0 — Placement libre de l’overlay et liste des membres (2026-11-26)
+
+- Dans Réglages → Voix & vidéo → Overlay vocal, Déplacer librement permet de glisser l’overlay puis de valider sa position. Annuler conserve le placement précédent. Les quatre coins restent disponibles.
+- La position est conservée sur ce PC et ajustée aux limites de l’écran. Après le placement, l’overlay retrouve son fond transparent et laisse passer les clics.
+- Le bouton Membres en haut à droite ouvre ou ferme une colonne avec les personnes en ligne et hors ligne, regroupées par grade : admins, commandants, squad leaders et membres.
+- La colonne affiche les photos, les spécialités et le salon vocal actuel. Un clic ouvre le profil ; le clic droit conserve les options du joueur. L’ouverture et les groupes repliés sont mémorisés par compte et serveur.
+- La présence suit la connexion à l’app, même sans vocal. En cas de perte du serveur, elle est indiquée comme indisponible. La gestion des membres se trouve désormais dans Réglages → Membres, réservée aux admins.
+
 ## 0.21.3 — Salon de briefing visible dans les vocaux (2026-11-25)
 
 - Rassembler une squad fait apparaître un salon Briefing · nom de l’opération dans l’arborescence, au-dessus des squads de cette opération.

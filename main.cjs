@@ -42,7 +42,7 @@ app.whenReady().then(async () => {
   const { Accounts } = await import('./src/accounts.mjs');
   accounts = new Accounts(app.getPath('userData'));
   try { await accounts.open(); } catch(error) { startupError=error.message; }
-  voiceOverlay=require('./src/overlay.cjs').createVoiceOverlay({BrowserWindow,screen,dataDir:app.getPath('userData'),root:__dirname});await voiceOverlay.open();
+  voiceOverlay=require('./src/overlay.cjs').createVoiceOverlay({BrowserWindow,screen,dataDir:app.getPath('userData'),root:__dirname,changed:value=>{if(win&&!win.isDestroyed())win.webContents.send('overlay:changed',value);}});await voiceOverlay.open();
   const {Remote,serverUrl}=await import('./src/remote.mjs');
   const {createPtt}=require('./src/ptt.cjs');
   ptt=createPtt(held=>{if(win&&!win.isDestroyed())win.webContents.send('voice:keys',held);});
@@ -97,6 +97,12 @@ app.whenReady().then(async () => {
   handle('overlay:settings',()=>voiceOverlay.info());
   handle('overlay:configure',value=>voiceOverlay.configure(value));
   handle('overlay:preview',()=>{if(!remote?.token&&!accounts.userId)throw new Error('Connexion requise.');voiceOverlay.preview();return true;});
+  handle('overlay:place',()=>{if(!remote?.token&&!accounts.userId)throw new Error('Connexion requise.');return voiceOverlay.beginPlacement();});
+  handle('overlay:place-finish',commit=>voiceOverlay.finishPlacement(commit===true));
+  ipcMain.handle('overlay:drag-start',event=>{if(!voiceOverlay.owns(event))throw new Error('Origine refusée');voiceOverlay.dragStart();});
+  ipcMain.on('overlay:drag-move',event=>{if(voiceOverlay.owns(event))voiceOverlay.dragMove();});
+  ipcMain.on('overlay:drag-end',event=>{if(voiceOverlay.owns(event))voiceOverlay.dragEnd();});
+  ipcMain.handle('overlay:finish',(event,commit)=>{if(!voiceOverlay.owns(event))throw new Error('Origine refusée');return voiceOverlay.finishPlacement(commit===true);});
   handle('updates:ready',()=>updates.ready);
   handle('updates:check',()=>updates.check());
   handle('updates:install',()=>updates.install());
